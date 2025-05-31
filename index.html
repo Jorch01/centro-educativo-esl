@@ -27,6 +27,28 @@
             background: linear-gradient(45deg, #1e3c72, #2a5298, #764ba2);
             background-size: 400% 400%;
             animation: gradientShift 8s ease infinite;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            opacity: 0.7;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(30,60,114,0.8), rgba(42,82,152,0.6), rgba(118,75,162,0.8));
+            z-index: 2;
         }
 
         @keyframes gradientShift {
@@ -37,9 +59,32 @@
 
         .hero-content {
             text-align: center;
-            z-index: 2;
+            z-index: 3;
             max-width: 1200px;
             padding: 0 20px;
+            position: relative;
+        }
+
+        .video-toggle-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50px;
+            padding: 15px 25px;
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 4;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .video-toggle-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
         }
 
         .main-title {
@@ -337,19 +382,6 @@
             fill: currentColor;
         }
 
-        .dimension-badge {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.8);
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
         .gallery-section {
             padding: 100px 20px;
             background: linear-gradient(135deg, rgba(0,0,0,0.1), rgba(255,255,255,0.1));
@@ -419,11 +451,13 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.4s ease;
+            transition: transform 0.4s ease, filter 0.3s ease;
+            cursor: pointer;
         }
 
         .gallery-item:hover img {
             transform: scale(1.1);
+            filter: brightness(1.1);
         }
 
         .gallery-overlay {
@@ -451,6 +485,46 @@
         .gallery-overlay p {
             font-size: 0.9rem;
             opacity: 0.9;
+        }
+
+        /* Modal para vista completa de imágenes */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-close:hover {
+            opacity: 0.7;
         }
 
         @media (max-width: 768px) {
@@ -486,12 +560,24 @@
 </head>
 <body>
     <section class="hero-section">
+        <video class="hero-video" id="heroVideo" muted loop poster="./assets/videos/tour-poster.jpg">
+            <source src="./assets/videos/tour-completo.mp4" type="video/mp4" media="(min-width: 768px)">
+            <source src="./assets/videos/tour-completo-compressed.mp4" type="video/mp4" media="(max-width: 767px)">
+            Tu navegador no soporta video HTML5.
+        </video>
+        
+        <div class="hero-overlay"></div>
+        
         <div class="floating-cards" id="floating-cards"></div>
         
         <div class="hero-content">
             <h1 class="main-title">OPORTUNIDAD PREMIUM</h1>
             <p class="subtitle">Centro Educativo • Arquitectura Octagonal • Uso de Suelo Mixto • Cancún</p>
         </div>
+
+        <button class="video-toggle-btn" id="videoToggle">
+            <span id="videoToggleText">▶️ Reproducir Video</span>
+        </button>
     </section>
 
     <section class="info-section">
@@ -506,27 +592,28 @@
                 </div>
 
                 <div class="card">
-                    <h3 class="card-title">🚗 Estacionamiento</h3>
-                    <span class="highlight-number">40+</span>
-                    <p>Cajones de estacionamiento</p>
-                    <span class="highlight-number">1,000 m²</span>
-                    <p>Área libre para desarrollo</p>
-                </div>
-
-                <div class="card">
-                    <h3 class="card-title">📍 Ubicación</h3>
-                    <p><strong>FONATUR SM 313</strong></p>
-                    <p>Colegios, Cancún, Q.R.</p>
-                    <span class="highlight-number">3,305 m²</span>
-                    <p>Terreno total</p>
-                </div>
-
-                <div class="card">
                     <h3 class="card-title">🏗️ Uso de Suelo</h3>
                     <p><strong>Mixto de Barrio (MB)</strong></p>
                     <p>Uso comercial y habitacional</p>
                     <span class="highlight-number">1 viv/40m²</span>
                     <p>Densidad neta permitida</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">🚗 Estacionamiento Multinivel</h3>
+                    <p><strong>Nivel Subterráneo</strong></p>
+                    <span class="highlight-number">40+</span>
+                    <p>Cajones cubiertos + rampas de acceso</p>
+                    <span class="highlight-number">1,000 m²</span>
+                    <p>Área libre para desarrollo</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📍 Ubicación Premium</h3>
+                    <p><strong>FONATUR SM 313</strong></p>
+                    <p>Colegios, Cancún, Q.R.</p>
+                    <span class="highlight-number">3,305 m²</span>
+                    <p>Terreno total</p>
                 </div>
                 
                 <div style="text-align: center; margin-top: 50px; padding: 40px; background: rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(20px);">
@@ -539,8 +626,8 @@
                         </div>
                         <div>
                             <div style="font-size: 2rem; margin-bottom: 10px;">🏗️</div>
-                            <strong>Elevador Premium</strong>
-                            <p>Accesibilidad total 5 niveles</p>
+                            <strong>Elevador 4 Niveles</strong>
+                            <p>Acceso desde sótano hasta nivel 3</p>
                         </div>
                         <div>
                             <div style="font-size: 2rem; margin-bottom: 10px;">❄️</div>
@@ -572,7 +659,7 @@
                 </div>
             </div>
 
-                <div class="specs-grid">
+            <div class="specs-grid">
                 <div class="spec-item">
                     <div class="spec-label">Densidad Neta</div>
                     <div class="spec-value">1 viv/40m²</div>
@@ -586,8 +673,8 @@
                     <div class="spec-value">70%</div>
                 </div>
                 <div class="spec-item">
-                    <div class="spec-label">Niveles</div>
-                    <div class="spec-value">5</div>
+                    <div class="spec-label">Niveles Construidos</div>
+                    <div class="spec-value">4 niveles</div>
                 </div>
                 <div class="spec-item">
                     <div class="spec-label">Frente Mínimo</div>
@@ -604,7 +691,8 @@
                 
                 <div class="gallery-grid">
                     <div class="gallery-item main-feature">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23667eea' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='20'%3EEdificio Principal%3C/text%3E%3C/svg%3E" alt="Edificio Principal">
+                        <img src="./assets/images/edificio-principal.jpg" alt="Edificio Principal" 
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%23667eea\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'20\'%3EEdificio Principal%3C/text%3E%3C/svg%3E'">
                         <div class="gallery-overlay">
                             <h3>🏢 Arquitectura Octagonal</h3>
                             <p>Diseño octagonal único con materiales premium</p>
@@ -612,7 +700,8 @@
                     </div>
                     
                     <div class="gallery-item">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%234ecdc4' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='18'%3EAuditorio%3C/text%3E%3C/svg%3E" alt="Auditorio">
+                        <img src="./assets/images/auditorio.jpg" alt="Auditorio"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%234ecdc4\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'18\'%3EAuditorio%3C/text%3E%3C/svg%3E'">
                         <div class="gallery-overlay">
                             <h3>🎭 Auditorio Profesional</h3>
                             <p>Capacidad para 200+ personas</p>
@@ -620,7 +709,8 @@
                     </div>
                     
                     <div class="gallery-item">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%2396ceb4' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='18'%3EAulas%3C/text%3E%3C/svg%3E" alt="Aulas">
+                        <img src="./assets/images/aulas.jpg" alt="Aulas"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%2396ceb4\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'18\'%3EAulas%3C/text%3E%3C/svg%3E'">
                         <div class="gallery-overlay">
                             <h3>📚 Aulas Equipadas</h3>
                             <p>Tecnología educativa de vanguardia</p>
@@ -628,23 +718,26 @@
                     </div>
                     
                     <div class="gallery-item">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23ff6b6b' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='18'%3EBiblioteca%3C/text%3E%3C/svg%3E" alt="Biblioteca">
+                        <img src="./assets/images/biblioteca.jpg" alt="Biblioteca"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%23ff6b6b\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'18\'%3EBiblioteca%3C/text%3E%3C/svg%3E'">
                         <div class="gallery-overlay">
                             <h3>📖 Biblioteca Moderna</h3>
                             <p>Espacios de estudio y consulta</p>
                         </div>
                     </div>
                     
-                    <div class="gallery-item">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23764ba2' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='16'%3ECafetería%3C/text%3E%3C/svg%3E" alt="Cafetería">
+                    <div class="gallery-item expansion-feature">
+                        <img src="./assets/images/expansion-area.jpg" alt="Área de Expansión"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%23764ba2\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'200\' y=\'130\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3EÁrea de%3C/text%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3EExpansión%3C/text%3E%3Ctext x=\'200\' y=\'170\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3E1000m²%3C/text%3E%3C/svg%3E'">
                         <div class="gallery-overlay">
-                            <h3>☕ Cafetería</h3>
-                            <p>Espacios de convivencia</p>
+                            <h3>🚀 Área de Expansión</h3>
+                            <p>1,000 m² libres para desarrollo futuro</p>
                         </div>
                     </div>
                     
                     <div class="gallery-item">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%232a5298' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='16'%3EEstacionamiento%3C/text%3E%3C/svg%3E" alt="Estacionamiento">
+                        <img src="./assets/images/estacionamiento.jpg" alt="Estacionamiento"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%232a5298\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3EEstacionamiento%3C/text%3E%3C/svg%3E'">
                         <div class="gallery-overlay">
                             <h3>🚗 Estacionamiento</h3>
                             <p>40+ cajones cubiertos</p>
@@ -654,6 +747,12 @@
             </div>
         </div>
     </section>
+
+    <!-- Modal para vista completa de imágenes -->
+    <div class="image-modal" id="imageModal">
+        <span class="modal-close" id="modalClose">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
 
     <section class="cta-section">
         <div class="container">
@@ -690,14 +789,92 @@
                 element.style.animationDelay = Math.random() * 20 + 's';
                 element.style.animationDuration = (15 + Math.random() * 10) + 's';
                 
-                // Agregar evento de clic para reventar burbuja
-                element.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    popBubble(element);
+                // Agregar evento de clic para reventar burbujas
+                element.addEventListener('click', function() {
+                    popBubble(this);
                 });
                 
                 container.appendChild(element);
             }
+        }
+
+        // Sistema de gestión de video inteligente
+        function initializeVideoSystem() {
+            const video = document.getElementById('heroVideo');
+            const toggleBtn = document.getElementById('videoToggle');
+            const toggleText = document.getElementById('videoToggleText');
+            
+            let isPlaying = false;
+            
+            // Control de reproducción de video
+            toggleBtn.addEventListener('click', function() {
+                if (isPlaying) {
+                    video.pause();
+                    toggleText.textContent = '▶️ Reproducir Video';
+                    isPlaying = false;
+                } else {
+                    video.play().catch(e => {
+                        console.log('Autoplay bloqueado por el navegador');
+                    });
+                    toggleText.textContent = '⏸️ Pausar Video';
+                    isPlaying = true;
+                }
+            });
+
+            // Intentar autoplay silencioso en carga
+            video.addEventListener('canplaythrough', function() {
+                if (window.innerWidth > 768) { // Solo en desktop
+                    video.play().then(() => {
+                        isPlaying = true;
+                        toggleText.textContent = '⏸️ Pausar Video';
+                    }).catch(() => {
+                        // Si falla el autoplay, mostrar botón para iniciar
+                        toggleText.textContent = '▶️ Reproducir Video';
+                    });
+                }
+            });
+        }
+
+        // Sistema de modal para vista completa de imágenes
+        function initializeImageModal() {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const closeBtn = document.getElementById('modalClose');
+            
+            const galleryImages = document.querySelectorAll('.gallery-item img');
+            
+            galleryImages.forEach((img) => {
+                img.addEventListener('click', function() {
+                    modal.classList.add('active');
+                    modalImg.src = this.src;
+                    modalImg.alt = this.alt;
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            function hideModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Event listeners para controles del modal
+            closeBtn.addEventListener('click', hideModal);
+            
+            // Cerrar modal haciendo clic fuera de la imagen
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    hideModal();
+                }
+            });
+            
+            // Navegación con teclado
+            document.addEventListener('keydown', function(e) {
+                if (modal.classList.contains('active')) {
+                    if (e.key === 'Escape') {
+                        hideModal();
+                    }
+                }
+            });
         }
 
         // Función para reventar burbujas
@@ -798,47 +975,15 @@
             }
         }
 
-        // Animación de scroll para revelar elementos
-        function revealOnScroll() {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                const cardTop = card.getBoundingClientRect().top;
-                const cardVisible = 150;
-                
-                if (cardTop < window.innerHeight - cardVisible) {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }
-            });
-        }
-
-        // Inicializar
+        // Inicialización completa del sistema multimedia
         document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar todos los sistemas
             createFloatingElements();
-            window.addEventListener('scroll', revealOnScroll);
-            revealOnScroll(); // Ejecutar una vez al cargar
-        });
-
-        // Animación parallax suave
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const hero = document.querySelector('.hero-section');
+            initializeVideoSystem();
+            initializeImageModal();
+            
+            // Inicializar efectos de galería existentes
             const galleryItems = document.querySelectorAll('.gallery-item');
-            
-            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
-            
-            // Efecto parallax en galería
-            galleryItems.forEach((item, index) => {
-                const speed = 0.1 + (index * 0.05);
-                const yPos = -(scrolled * speed);
-                item.style.transform = `translateY(${yPos}px)`;
-            });
-        });
-
-        // Efectos adicionales para la galería
-        document.addEventListener('DOMContentLoaded', function() {
-            const galleryItems = document.querySelectorAll('.gallery-item');
-            
             galleryItems.forEach(item => {
                 item.addEventListener('mouseenter', function() {
                     this.style.transform += ' scale(1.05)';
@@ -848,15 +993,6 @@
                 item.addEventListener('mouseleave', function() {
                     this.style.transform = this.style.transform.replace(' scale(1.05)', '');
                     this.style.zIndex = '1';
-                });
-
-                // Efecto de clic para ver imagen completa (opcional)
-                item.addEventListener('click', function() {
-                    const img = this.querySelector('img');
-                    if (img && img.src.includes('postimg.cc')) {
-                        // Abrir imagen en nueva pestaña
-                        window.open(img.src, '_blank');
-                    }
                 });
             });
 
@@ -869,6 +1005,16 @@
                         expansionItem.style.boxShadow = '0 0 20px rgba(69, 183, 209, 0.3)';
                     }, 1000);
                 }, 3000);
+            }
+        });
+
+        // Animación parallax suave
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero-section');
+            
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
             }
         });
     </script>
