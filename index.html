@@ -527,6 +527,214 @@
             opacity: 0.7;
         }
 
+        /* Video flotante Picture-in-Picture */
+        .floating-video-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 200px;
+            background: rgba(0,0,0,0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .floating-video-container.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .floating-video-container.minimized {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+
+        .floating-video-container.minimized .floating-video {
+            object-fit: cover;
+        }
+
+        .floating-video-container.minimized .floating-controls {
+            display: none;
+        }
+
+        .floating-video-container.minimized .floating-header {
+            display: none;
+        }
+
+        .floating-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .floating-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .floating-title {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: bold;
+            opacity: 0.9;
+        }
+
+        .floating-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .floating-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .floating-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .floating-video-container:hover .floating-controls {
+            opacity: 1;
+        }
+
+        .floating-play-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-play-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .floating-progress {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .floating-progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .floating-time {
+            color: white;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Animación de pulso para el video minimizado */
+        .floating-video-container.minimized {
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(69, 183, 209, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(69, 183, 209, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 20px rgba(69, 183, 209, 0);
+            }
+        }
+
+        /* Indicador de scroll para mostrar que hay video flotante */
+        .scroll-indicator {
+            position: fixed;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            background: rgba(69, 183, 209, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            z-index: 8888;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .scroll-indicator.show {
+            opacity: 1;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(-50%);
+            }
+            40% {
+                transform: translateY(-60%);
+            }
+            60% {
+                transform: translateY(-55%);
+            }
+        }
+
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;
@@ -554,6 +762,25 @@
                 padding: 3px 10px;
                 top: -12px;
                 left: 10px;
+            }
+
+            /* Ajustes para móvil del video flotante */
+            .floating-video-container {
+                width: 280px;
+                height: 160px;
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .floating-video-container.minimized {
+                width: 60px;
+                height: 60px;
+            }
+
+            .scroll-indicator {
+                right: 20px;
+                font-size: 0.7rem;
+                padding: 8px;
             }
         }
     </style>
@@ -754,6 +981,36 @@
         <img class="modal-content" id="modalImage">
     </div>
 
+    <!-- Video flotante Picture-in-Picture -->
+    <div class="floating-video-container" id="floatingVideoContainer">
+        <div class="floating-header">
+            <div class="floating-title">🏫 Tour Virtual</div>
+            <div class="floating-buttons">
+                <button class="floating-btn" id="minimizeBtn" title="Minimizar">−</button>
+                <button class="floating-btn" id="expandBtn" title="Expandir" style="display: none;">⛶</button>
+                <button class="floating-btn" id="closeFloatingBtn" title="Cerrar">×</button>
+            </div>
+        </div>
+        
+        <video class="floating-video" id="floatingVideo" muted>
+            <source src="./assets/videos/tour-completo.mp4" type="video/mp4">
+            Tu navegador no soporta video HTML5.
+        </video>
+        
+        <div class="floating-controls">
+            <button class="floating-play-btn" id="floatingPlayBtn">▶️</button>
+            <div class="floating-progress" id="floatingProgress">
+                <div class="floating-progress-bar" id="floatingProgressBar"></div>
+            </div>
+            <div class="floating-time" id="floatingTime">0:00 / 0:00</div>
+        </div>
+    </div>
+
+    <!-- Indicador de scroll -->
+    <div class="scroll-indicator" id="scrollIndicator">
+        ⬇️ Scroll para video flotante
+    </div>
+
     <section class="cta-section">
         <div class="container">
             <h2 style="font-size: 2.5rem; margin-bottom: 20px; font-weight: 900;">¡Contacto Directo por WhatsApp!</h2>
@@ -952,6 +1209,168 @@
             }
         }
 
+        // Sistema de video flotante Picture-in-Picture
+        function initializeFloatingVideo() {
+            const heroVideo = document.getElementById('heroVideo');
+            const floatingContainer = document.getElementById('floatingVideoContainer');
+            const floatingVideo = document.getElementById('floatingVideo');
+            const floatingPlayBtn = document.getElementById('floatingPlayBtn');
+            const floatingProgress = document.getElementById('floatingProgress');
+            const floatingProgressBar = document.getElementById('floatingProgressBar');
+            const floatingTime = document.getElementById('floatingTime');
+            const minimizeBtn = document.getElementById('minimizeBtn');
+            const expandBtn = document.getElementById('expandBtn');
+            const closeFloatingBtn = document.getElementById('closeFloatingBtn');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+
+            let isFloatingVideoVisible = false;
+            let isMinimized = false;
+            let showIndicator = true;
+
+            // Intersection Observer para detectar cuando el video hero sale del viewport
+            const heroObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.intersectionRatio < 0.5 && heroVideo.currentTime > 0) {
+                        // Video hero no está visible y está reproduciéndose
+                        showFloatingVideo();
+                    } else if (entry.intersectionRatio >= 0.5) {
+                        // Video hero está visible
+                        hideFloatingVideo();
+                    }
+                });
+            }, {
+                threshold: [0.5]
+            });
+
+            heroObserver.observe(heroVideo);
+
+            // Mostrar indicador de scroll al principio
+            setTimeout(() => {
+                if (showIndicator) {
+                    scrollIndicator.classList.add('show');
+                    setTimeout(() => {
+                        scrollIndicator.classList.remove('show');
+                    }, 3000);
+                }
+            }, 2000);
+
+            function showFloatingVideo() {
+                if (!isFloatingVideoVisible) {
+                    // Sincronizar tiempo de reproducción
+                    floatingVideo.currentTime = heroVideo.currentTime;
+                    floatingVideo.muted = heroVideo.muted;
+                    
+                    if (!heroVideo.paused) {
+                        floatingVideo.play();
+                    }
+                    
+                    floatingContainer.classList.add('visible');
+                    isFloatingVideoVisible = true;
+                    showIndicator = false;
+                    scrollIndicator.classList.remove('show');
+                }
+            }
+
+            function hideFloatingVideo() {
+                if (isFloatingVideoVisible) {
+                    // Sincronizar de vuelta al video hero
+                    heroVideo.currentTime = floatingVideo.currentTime;
+                    
+                    floatingContainer.classList.remove('visible');
+                    floatingVideo.pause();
+                    isFloatingVideoVisible = false;
+                }
+            }
+
+            // Controles del video flotante
+            floatingPlayBtn.addEventListener('click', function() {
+                if (floatingVideo.paused) {
+                    floatingVideo.play();
+                    heroVideo.play();
+                    floatingPlayBtn.textContent = '⏸️';
+                } else {
+                    floatingVideo.pause();
+                    heroVideo.pause();
+                    floatingPlayBtn.textContent = '▶️';
+                }
+            });
+
+            // Barra de progreso
+            floatingVideo.addEventListener('timeupdate', function() {
+                const progress = (floatingVideo.currentTime / floatingVideo.duration) * 100;
+                floatingProgressBar.style.width = progress + '%';
+                
+                // Actualizar tiempo
+                const currentTime = formatTime(floatingVideo.currentTime);
+                const duration = formatTime(floatingVideo.duration);
+                floatingTime.textContent = `${currentTime} / ${duration}`;
+                
+                // Sincronizar con video hero
+                if (Math.abs(heroVideo.currentTime - floatingVideo.currentTime) > 1) {
+                    heroVideo.currentTime = floatingVideo.currentTime;
+                }
+            });
+
+            // Click en barra de progreso para navegar
+            floatingProgress.addEventListener('click', function(e) {
+                const rect = floatingProgress.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const clickRatio = clickX / rect.width;
+                const newTime = clickRatio * floatingVideo.duration;
+                
+                floatingVideo.currentTime = newTime;
+                heroVideo.currentTime = newTime;
+            });
+
+            // Botón minimizar
+            minimizeBtn.addEventListener('click', function() {
+                floatingContainer.classList.add('minimized');
+                minimizeBtn.style.display = 'none';
+                expandBtn.style.display = 'block';
+                isMinimized = true;
+            });
+
+            // Botón expandir
+            expandBtn.addEventListener('click', function() {
+                floatingContainer.classList.remove('minimized');
+                expandBtn.style.display = 'none';
+                minimizeBtn.style.display = 'block';
+                isMinimized = false;
+            });
+
+            // Click en video minimizado para expandir
+            floatingVideo.addEventListener('click', function() {
+                if (isMinimized) {
+                    expandBtn.click();
+                }
+            });
+
+            // Botón cerrar
+            closeFloatingBtn.addEventListener('click', function() {
+                hideFloatingVideo();
+                floatingVideo.pause();
+                heroVideo.pause();
+            });
+
+            // Actualizar estado del botón play/pause
+            floatingVideo.addEventListener('play', function() {
+                floatingPlayBtn.textContent = '⏸️';
+            });
+
+            floatingVideo.addEventListener('pause', function() {
+                floatingPlayBtn.textContent = '▶️';
+            });
+
+            // Función para formatear tiempo
+            function formatTime(seconds) {
+                if (isNaN(seconds)) return '0:00';
+                
+                const minutes = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${minutes}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
         // Función para generar sonido de pop
         function playPopSound() {
             try {
@@ -981,6 +1400,7 @@
             createFloatingElements();
             initializeVideoSystem();
             initializeImageModal();
+            initializeFloatingVideo(); // Nueva funcionalidad
             
             // Inicializar efectos de galería existentes
             const galleryItems = document.querySelectorAll('.gallery-item');
