@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro Educativo Premium - Oportunidad de Inversión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+            color: white;
+        }
+
+        .hero-section {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #1e3c72, #2a5298, #764ba2);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .main-title {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textGradient 3s ease infinite, float 6s ease-in-out infinite;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+
+        @keyframes textGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: slideUp 1s ease 0.5s both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 0.9; transform: translateY(0); }
+        }
+
+        .floating-cards {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .floating-card {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: floatAround 20s linear infinite;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        @keyframes floatAround {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+
+        .info-section {
+            padding: 100px 20px;
+            background: rgba(0,0,0,0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: cardReveal 0.8s ease forwards;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .card:nth-child(1) { animation-delay: 0.2s; }
+        .card:nth-child(2) { animation-delay: 0.4s; }
+        .card:nth-child(3) { animation-delay: 0.6s; }
+        .card:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes cardReveal {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
+
+        .highlight-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #ff6b6b;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 50px 0;
+        }
+
+        .spec-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .spec-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+
+        .spec-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .spec-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #96ceb4;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="60" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: patternMove 20s linear infinite;
+        }
+
+        @keyframes patternMove {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-100px) translateY(-100px); }
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: #25D366;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4); }
+            50% { box-shadow: 0 15px 40px rgba(37, 211, 102, 0.6); }
+            100% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4); }
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(37, 211, 102, 0.6);
+        }
+
+        .whatsapp-icon {
+            width: 30px;
+            height: 30px;
+            fill: currentColor;
+        }
+
+        .dimension-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .gallery-section {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.1), rgba(255,255,255,0.1));
+            backdrop-filter: blur(20px);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            height: 250px;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            animation: galleryReveal 0.8s ease forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .gallery-item.main-feature {
+            grid-column: span 2;
+            height: 350px;
+        }
+
+        .gallery-item.expansion-feature {
+            border: 3px solid #45b7d1;
+            box-shadow: 0 0 20px rgba(69, 183, 209, 0.3);
+            position: relative;
+        }
+
+        .gallery-item.expansion-feature::before {
+            content: '🚀 OPORTUNIDAD DE EXPANSIÓN';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: linear-gradient(45deg, #45b7d1, #96ceb4);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .gallery-item:nth-child(1) { animation-delay: 0.1s; }
+        .gallery-item:nth-child(2) { animation-delay: 0.2s; }
+        .gallery-item:nth-child(3) { animation-delay: 0.3s; }
+        .gallery-item:nth-child(4) { animation-delay: 0.4s; }
+        .gallery-item:nth-child(5) { animation-delay: 0.5s; }
+        .gallery-item:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes galleryReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px 20px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-overlay h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #4ecdc4;
+        }
+
+        .gallery-overlay p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .specs-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .hero-section {
+                padding: 20px;
+            }
+            
+            .gallery-item.main-feature {
+                grid-column: span 1;
+                height: 250px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-item.expansion-feature::before {
+                font-size: 0.7rem;
+                padding: 3px 10px;
+                top: -12px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero-section">
+        <div class="floating-cards" id="floating-cards"></div>
+        
+        <div class="hero-content">
+            <h1 class="main-title">OPORTUNIDAD PREMIUM</h1>
+            <p class="subtitle">Centro Educativo • 21 Años de Historia • Cancún</p>
+        </div>
+    </section>
+
+    <section class="info-section">
+        <div class="container">
+            <div class="grid">
+                <div class="card">
+                    <h3 class="card-title">🏫 Instalaciones</h3>
+                    <span class="highlight-number">15</span>
+                    <p>Aulas y oficinas completamente equipadas</p>
+                    <span class="highlight-number">2,977 m²</span>
+                    <p>Área construida</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">🚗 Estacionamiento</h3>
+                    <span class="highlight-number">40+</span>
+                    <p>Cajones de estacionamiento</p>
+                    <span class="highlight-number">1,000 m²</span>
+                    <p>Área libre para desarrollo</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📍 Ubicación</h3>
+                    <p><strong>FONATUR SM 313</strong></p>
+                    <p>Colegios, Cancún, Q.R.</p>
+                    <span class="highlight-number">3,305 m²</span>
+                    <p>Terreno total</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">🏗️ Arquitectura Premium</h3>
+                    <p><strong>Diseño Vanguardista</strong></p>
+                    <p>Edificio circular único en Cancún</p>
+                    <span class="highlight-number">5</span>
+                    <p>Niveles de instalaciones modernas</p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 50px; padding: 40px; background: rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(20px);">
+                    <h3 style="color: #4ecdc4; font-size: 1.8rem; margin-bottom: 20px;">✨ Características Excepcionales</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
+                        <div>
+                            <div style="font-size: 2rem; margin-bottom: 10px;">🎭</div>
+                            <strong>Auditorio Circular</strong>
+                            <p>Diseño tipo anfiteatro único</p>
+                        </div>
+                        <div>
+                            <div style="font-size: 2rem; margin-bottom: 10px;">🏗️</div>
+                            <strong>Elevador Premium</strong>
+                            <p>Accesibilidad total 5 niveles</p>
+                        </div>
+                        <div>
+                            <div style="font-size: 2rem; margin-bottom: 10px;">❄️</div>
+                            <strong>Clima Integral</strong>
+                            <p>A/C en todo el complejo</p>
+                        </div>
+                        <div>
+                            <div style="font-size: 2rem; margin-bottom: 10px;">📡</div>
+                            <strong>Tecnología Avanzada</strong>
+                            <p>Proyectores y audio profesional</p>
+                        </div>
+                        <div style="background: linear-gradient(45deg, #45b7d1, #96ceb4); border-radius: 15px; padding: 20px; color: white; grid-column: 1 / -1;">
+                            <div style="font-size: 2.5rem; margin-bottom: 10px;">🚀</div>
+                            <strong style="font-size: 1.3rem;">POTENCIAL DE EXPANSIÓN</strong>
+                            <p style="font-size: 1.1rem; margin: 10px 0;"><strong>1,000 m² libres</strong> para desarrollo futuro</p>
+                            <p>Ideal para: Más aulas • Laboratorios • Gimnasio • Residencia estudiantil</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="specs-grid">
+                <div class="spec-item">
+                    <div class="spec-label">CUS Máximo</div>
+                    <div class="spec-value">8.0</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">COS Máximo</div>
+                    <div class="spec-value">70%</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Niveles</div>
+                    <div class="spec-value">5</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Frente Mínimo</div>
+                    <div class="spec-value">8m</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Altura Máxima</div>
+                    <div class="spec-value">30m</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Ubicación Premium</div>
+                    <div class="spec-value">FONATUR</div>
+                </div>
+            </div>
+            
+            <div class="gallery-section">
+                <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 50px; color: #4ecdc4;">📸 Instalaciones Premium</h2>
+                
+                <div class="gallery-grid">
+                    <div class="gallery-item main-feature">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23667eea' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='20'%3EEdificio Principal%3C/text%3E%3C/svg%3E" alt="Edificio Principal">
+                        <div class="gallery-overlay">
+                            <h3>🏢 Arquitectura Vanguardista</h3>
+                            <p>Diseño circular único con materiales premium</p>
+                        </div>
+                    </div>
+                    
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%234ecdc4' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='18'%3EAuditorio%3C/text%3E%3C/svg%3E" alt="Auditorio">
+                        <div class="gallery-overlay">
+                            <h3>🎭 Auditorio Profesional</h3>
+                            <p>Capacidad para 200+ personas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%2396ceb4' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='18'%3EAulas%3C/text%3E%3C/svg%3E" alt="Aulas">
+                        <div class="gallery-overlay">
+                            <h3>📚 Aulas Equipadas</h3>
+                            <p>Tecnología educativa de vanguardia</p>
+                        </div>
+                    </div>
+                    
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23ff6b6b' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='18'%3EBiblioteca%3C/text%3E%3C/svg%3E" alt="Biblioteca">
+                        <div class="gallery-overlay">
+                            <h3>📖 Biblioteca Moderna</h3>
+                            <p>Espacios de estudio y consulta</p>
+                        </div>
+                    </div>
+                    
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23764ba2' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='16'%3ECafetería%3C/text%3E%3C/svg%3E" alt="Cafetería">
+                        <div class="gallery-overlay">
+                            <h3>☕ Cafetería</h3>
+                            <p>Espacios de convivencia</p>
+                        </div>
+                    </div>
+                    
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%232a5298' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='16'%3EEstacionamiento%3C/text%3E%3C/svg%3E" alt="Estacionamiento">
+                        <div class="gallery-overlay">
+                            <h3>🚗 Estacionamiento</h3>
+                            <p>40+ cajones cubiertos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 20px; font-weight: 900;">¡No Pierdas Esta Oportunidad!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 40px; opacity: 0.9;">
+                Centro educativo de arquitectura vanguardista con instalaciones de lujo • Totalmente equipado y operativo
+            </p>
+            
+            <a href="https://wa.me/529981399930?text=¡Hola!%20He%20visto%20las%20instalaciones%20premium%20del%20centro%20educativo%20ESL%20y%20me%20interesa%20esta%20oportunidad%20única%20de%20inversión.%20Me%20llama%20especialmente%20la%20atención%20el%20diseño%20arquitectónico%20circular%20y%20el%20potencial%20de%20expansión%20de%201000m².%20¿Podríamos%20agendar%20una%20visita?" 
+               class="whatsapp-btn" target="_blank">
+                <svg class="whatsapp-icon" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                Contactar por WhatsApp
+            </a>
+            
+            <p style="margin-top: 20px; font-size: 1.1rem; opacity: 0.8;">
+                📱 9981399930
+            </p>
+        </div>
+    </section>
+
+    <script>
+        // Crear elementos flotantes
+        function createFloatingElements() {
+            const container = document.getElementById('floating-cards');
+            const shapes = ['🏫', '📚', '🎓', '💼', '📈', '🏗️'];
+            
+            for (let i = 0; i < 15; i++) {
+                const element = document.createElement('div');
+                element.className = 'floating-card';
+                element.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                element.style.left = Math.random() * 100 + '%';
+                element.style.animationDelay = Math.random() * 20 + 's';
+                element.style.animationDuration = (15 + Math.random() * 10) + 's';
+                element.style.fontSize = '20px';
+                element.style.display = 'flex';
+                element.style.alignItems = 'center';
+                element.style.justifyContent = 'center';
+                container.appendChild(element);
+            }
+        }
+
+        // Animación de scroll para revelar elementos
+        function revealOnScroll() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                const cardVisible = 150;
+                
+                if (cardTop < window.innerHeight - cardVisible) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            createFloatingElements();
+            window.addEventListener('scroll', revealOnScroll);
+            revealOnScroll(); // Ejecutar una vez al cargar
+        });
+
+        // Animación parallax suave
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero-section');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            
+            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            
+            // Efecto parallax en galería
+            galleryItems.forEach((item, index) => {
+                const speed = 0.1 + (index * 0.05);
+                const yPos = -(scrolled * speed);
+                item.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+
+        // Efectos adicionales para la galería
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            
+            galleryItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform += ' scale(1.05)';
+                    this.style.zIndex = '10';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = this.style.transform.replace(' scale(1.05)', '');
+                    this.style.zIndex = '1';
+                });
+
+                // Efecto de clic para ver imagen completa (opcional)
+                item.addEventListener('click', function() {
+                    const img = this.querySelector('img');
+                    if (img && img.src.includes('postimg.cc')) {
+                        // Abrir imagen en nueva pestaña
+                        window.open(img.src, '_blank');
+                    }
+                });
+            });
+
+            // Efecto especial para el área de expansión
+            const expansionItem = document.querySelector('.expansion-feature');
+            if (expansionItem) {
+                setInterval(() => {
+                    expansionItem.style.boxShadow = '0 0 30px rgba(69, 183, 209, 0.6)';
+                    setTimeout(() => {
+                        expansionItem.style.boxShadow = '0 0 20px rgba(69, 183, 209, 0.3)';
+                    }, 1000);
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
