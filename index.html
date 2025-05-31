@@ -87,6 +87,21 @@
             transform: scale(1.05);
         }
 
+        .video-toggle-btn:hover::after {
+            content: 'Doble clic para audio';
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0.9;
+        }
+
         /* Botón de play central para móviles */
         .mobile-play-overlay {
             position: absolute;
@@ -1100,58 +1115,6 @@
         </button>
     </section>
 
-    <!-- Sección promocional del desarrollador -->
-    <section class="developer-promo">
-        <div class="developer-content">
-            <h3>💼 ¿Te gustó este sitio web?</h3>
-            <p>Si quedaste impresionado con el diseño y funcionalidad de esta página, imagínate lo que podemos crear para tu negocio inmobiliario.</p>
-            
-            <div class="developer-highlight">
-                <strong style="color: #4ecdc4; font-size: 1.2rem;">🚀 Especialistas en Sitios Web para Inmobiliarias</strong>
-                <p style="margin-top: 15px;">Creamos experiencias digitales que convierten visitantes en clientes. Desde landing pages hasta plataformas completas de ventas.</p>
-            </div>
-
-            <div class="developer-features">
-                <div class="developer-feature">
-                    <span class="icon">🎨</span>
-                    <strong>Diseño Premium</strong>
-                    <span>Interfaces modernas y atractivas</span>
-                </div>
-                <div class="developer-feature">
-                    <span class="icon">📱</span>
-                    <strong>Responsive</strong>
-                    <span>Perfectos en todos los dispositivos</span>
-                </div>
-                <div class="developer-feature">
-                    <span class="icon">⚡</span>
-                    <strong>Carga Rápida</strong>
-                    <span>Optimizados para conversión</span>
-                </div>
-                <div class="developer-feature">
-                    <span class="icon">📈</span>
-                    <strong>Ventas</strong>
-                    <span>Enfocados en generar leads</span>
-                </div>
-            </div>
-
-            <p style="margin-top: 25px; font-size: 1rem; opacity: 0.8;">
-                <strong>✨ Portfolio especializado:</strong> Landing pages, catálogos de propiedades, tours virtuales, sistemas de contacto avanzados y más.
-            </p>
-
-            <a href="https://wa.me/529981399930?text=¡Hola!%20He%20visto%20el%20sitio%20web%20del%20centro%20educativo%20y%20me%20parece%20increíble.%20Estoy%20interesado%20en%20contratar%20servicios%20de%20desarrollo%20web%20para%20mi%20negocio%20inmobiliario.%20Me%20gustaría%20conocer%20más%20sobre%20sus%20servicios,%20precios%20y%20tiempos%20de%20entrega.%20¿Podríamos%20agendar%20una%20videollamada%20para%20platicar%20sobre%20mi%20proyecto?" 
-               class="developer-cta" target="_blank">
-                <svg viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                </svg>
-                Solicitar mi sitio web
-            </a>
-
-            <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7;">
-                💬 Respuesta inmediata por WhatsApp • Cotización sin compromiso
-            </p>
-        </div>
-    </section>
-
     <section class="info-section">
         <div class="container">
             <div class="grid">
@@ -1331,6 +1294,7 @@
         <div class="floating-header">
             <div class="floating-title">🏫 Tour Virtual</div>
             <div class="floating-buttons">
+                <button class="floating-btn" id="volumeBtn" title="Audio">🔊</button>
                 <button class="floating-btn" id="minimizeBtn" title="Minimizar">−</button>
                 <button class="floating-btn" id="expandBtn" title="Expandir" style="display: none;">⛶</button>
                 <button class="floating-btn" id="closeFloatingBtn" title="Cerrar">×</button>
@@ -1386,6 +1350,58 @@
         </div>
     </section>
 
+    <!-- Sección promocional del desarrollador (UNA SOLA VEZ) -->
+    <section class="developer-promo">
+        <div class="developer-content">
+            <h3>💼 ¿Te gustó este sitio web?</h3>
+            <p>Si quedaste impresionado con el diseño y funcionalidad de esta página, imagínate lo que podemos crear para tu negocio inmobiliario.</p>
+            
+            <div class="developer-highlight">
+                <strong style="color: #4ecdc4; font-size: 1.2rem;">🚀 Especialistas en Sitios Web para Inmobiliarias</strong>
+                <p style="margin-top: 15px;">Creamos experiencias digitales que convierten visitantes en clientes. Desde landing pages hasta plataformas completas de ventas.</p>
+            </div>
+
+            <div class="developer-features">
+                <div class="developer-feature">
+                    <span class="icon">🎨</span>
+                    <strong>Diseño Premium</strong>
+                    <span>Interfaces modernas y atractivas</span>
+                </div>
+                <div class="developer-feature">
+                    <span class="icon">📱</span>
+                    <strong>Responsive</strong>
+                    <span>Perfectos en todos los dispositivos</span>
+                </div>
+                <div class="developer-feature">
+                    <span class="icon">⚡</span>
+                    <strong>Carga Rápida</strong>
+                    <span>Optimizados para conversión</span>
+                </div>
+                <div class="developer-feature">
+                    <span class="icon">📈</span>
+                    <strong>Ventas</strong>
+                    <span>Enfocados en generar leads</span>
+                </div>
+            </div>
+
+            <p style="margin-top: 25px; font-size: 1rem; opacity: 0.8;">
+                <strong>✨ Portfolio especializado:</strong> Landing pages, catálogos de propiedades, tours virtuales, sistemas de contacto avanzados y más.
+            </p>
+
+            <a href="https://wa.me/529981399930?text=¡Hola!%20He%20visto%20el%20sitio%20web%20del%20centro%20educativo%20y%20me%20parece%20increíble.%20Estoy%20interesado%20en%20contratar%20servicios%20de%20desarrollo%20web%20para%20mi%20negocio%20inmobiliario.%20Me%20gustaría%20conocer%20más%20sobre%20sus%20servicios,%20precios%20y%20tiempos%20de%20entrega.%20¿Podríamos%20agendar%20una%20videollamada%20para%20platicar%20sobre%20mi%20proyecto?" 
+               class="developer-cta" target="_blank">
+                <svg viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                Solicitar mi sitio web
+            </a>
+
+            <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7;">
+                💬 Respuesta inmediata por WhatsApp • Cotización sin compromiso
+            </p>
+        </div>
+    </section>
+
     <script>
         // Crear elementos flotantes
         function createFloatingElements() {
@@ -1420,6 +1436,7 @@
             let isPlaying = false;
             let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             let hasUserInteracted = false;
+            let hasAudio = false;
 
             // Función para detectar si es dispositivo móvil
             function isMobileDevice() {
@@ -1439,12 +1456,32 @@
                 hasUserInteracted = true;
             }
 
-            // Función para intentar reproducir video
-            async function tryPlayVideo() {
+            // Función para intentar reproducir video con audio
+            async function tryPlayVideoWithAudio() {
                 try {
+                    // Activar audio cuando el usuario interactúa conscientemente
+                    video.muted = false;
+                    hasAudio = true;
                     await video.play();
                     isPlaying = true;
-                    toggleText.textContent = '⏸️ Pausar Video';
+                    toggleText.textContent = '⏸️ Pausar Video 🔊';
+                    hideMobilePlayOverlay();
+                    return true;
+                } catch (error) {
+                    console.log('Error reproduciendo con audio:', error);
+                    // Fallback: intentar sin audio
+                    return await tryPlayVideoMuted();
+                }
+            }
+
+            // Función para intentar reproducir video sin audio (autoplay)
+            async function tryPlayVideoMuted() {
+                try {
+                    video.muted = true;
+                    hasAudio = false;
+                    await video.play();
+                    isPlaying = true;
+                    toggleText.textContent = '⏸️ Pausar Video 🔇';
                     hideMobilePlayOverlay();
                     return true;
                 } catch (error) {
@@ -1456,11 +1493,29 @@
                 }
             }
 
+            // Función para alternar audio
+            function toggleAudio() {
+                if (isPlaying) {
+                    video.muted = !video.muted;
+                    hasAudio = !video.muted;
+                    updateToggleText();
+                }
+            }
+
+            // Actualizar texto del botón según el estado
+            function updateToggleText() {
+                if (isPlaying) {
+                    toggleText.textContent = hasAudio ? '⏸️ Pausar Video 🔊' : '⏸️ Pausar Video 🔇';
+                } else {
+                    toggleText.textContent = '▶️ Reproducir Video 🔊';
+                }
+            }
+
             // Función para pausar video
             function pauseVideo() {
                 video.pause();
                 isPlaying = false;
-                toggleText.textContent = '▶️ Reproducir Video';
+                updateToggleText();
             }
 
             // Control de reproducción desde el botón principal
@@ -1468,43 +1523,55 @@
                 if (isPlaying) {
                     pauseVideo();
                 } else {
-                    await tryPlayVideo();
+                    // Cuando el usuario hace clic, intentar con audio
+                    await tryPlayVideoWithAudio();
                 }
             });
 
             // Control desde el botón móvil central
             mobilePlayBtn.addEventListener('click', async function() {
-                await tryPlayVideo();
+                await tryPlayVideoWithAudio();
+            });
+
+            // Doble clic en el botón para alternar audio
+            toggleBtn.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                toggleAudio();
             });
 
             // Event listeners para estados del video
             video.addEventListener('play', function() {
                 isPlaying = true;
-                toggleText.textContent = '⏸️ Pausar Video';
+                updateToggleText();
                 hideMobilePlayOverlay();
             });
 
             video.addEventListener('pause', function() {
                 isPlaying = false;
-                toggleText.textContent = '▶️ Reproducir Video';
+                updateToggleText();
             });
 
             video.addEventListener('ended', function() {
                 isPlaying = false;
-                toggleText.textContent = '▶️ Reproducir Video';
+                updateToggleText();
                 if (isMobileDevice()) {
                     showMobilePlayOverlay();
                 }
             });
 
+            video.addEventListener('volumechange', function() {
+                hasAudio = !video.muted && video.volume > 0;
+                updateToggleText();
+            });
+
             // Intentar autoplay cuando el video está listo
             video.addEventListener('canplaythrough', async function() {
                 if (!isMobileDevice() && !hasUserInteracted) {
-                    // Solo intentar autoplay en desktop
-                    const played = await tryPlayVideo();
+                    // Solo intentar autoplay en desktop (sin audio para cumplir políticas)
+                    const played = await tryPlayVideoMuted();
                     if (!played) {
                         // Si falla en desktop, mostrar botón
-                        toggleText.textContent = '▶️ Reproducir Video';
+                        updateToggleText();
                     }
                 } else {
                     // En móviles, siempre mostrar overlay inicial
@@ -1535,6 +1602,9 @@
                 // En móviles, mostrar overlay después de cargar
                 setTimeout(showMobilePlayOverlay, 1000);
             }
+
+            // Agregar tooltip informativo
+            toggleBtn.title = 'Clic para reproducir/pausar • Doble clic para activar/desactivar audio';
         }
 
         // Sistema de modal para vista completa de imágenes
@@ -1663,6 +1733,7 @@
             const floatingProgress = document.getElementById('floatingProgress');
             const floatingProgressBar = document.getElementById('floatingProgressBar');
             const floatingTime = document.getElementById('floatingTime');
+            const volumeBtn = document.getElementById('volumeBtn');
             const minimizeBtn = document.getElementById('minimizeBtn');
             const expandBtn = document.getElementById('expandBtn');
             const closeFloatingBtn = document.getElementById('closeFloatingBtn');
@@ -1702,9 +1773,11 @@
 
             function showFloatingVideo() {
                 if (!isFloatingVideoVisible) {
-                    // Sincronizar tiempo de reproducción
+                    // Sincronizar tiempo de reproducción y audio
                     floatingVideo.currentTime = heroVideo.currentTime;
-                    floatingVideo.muted = true; // Siempre muted para evitar problemas
+                    floatingVideo.muted = heroVideo.muted;
+                    floatingVideo.volume = heroVideo.volume;
+                    updateVolumeButton();
                     
                     if (!heroVideo.paused) {
                         // Intentar reproducir el video flotante
@@ -1724,10 +1797,25 @@
                 if (isFloatingVideoVisible) {
                     // Sincronizar de vuelta al video hero
                     heroVideo.currentTime = floatingVideo.currentTime;
+                    heroVideo.muted = floatingVideo.muted;
+                    heroVideo.volume = floatingVideo.volume;
                     
                     floatingContainer.classList.remove('visible');
                     floatingVideo.pause();
                     isFloatingVideoVisible = false;
+                }
+            }
+
+            function updateVolumeButton() {
+                if (floatingVideo.muted || floatingVideo.volume === 0) {
+                    volumeBtn.textContent = '🔇';
+                    volumeBtn.title = 'Activar audio';
+                } else if (floatingVideo.volume < 0.5) {
+                    volumeBtn.textContent = '🔉';
+                    volumeBtn.title = 'Volumen bajo';
+                } else {
+                    volumeBtn.textContent = '🔊';
+                    volumeBtn.title = 'Volumen alto';
                 }
             }
 
@@ -1748,6 +1836,41 @@
                 }
             });
 
+            // Control de volumen del video flotante
+            volumeBtn.addEventListener('click', function() {
+                if (floatingVideo.muted) {
+                    // Activar audio
+                    floatingVideo.muted = false;
+                    heroVideo.muted = false;
+                    if (floatingVideo.volume === 0) {
+                        floatingVideo.volume = 0.7;
+                        heroVideo.volume = 0.7;
+                    }
+                } else {
+                    // Desactivar audio
+                    floatingVideo.muted = true;
+                    heroVideo.muted = true;
+                }
+                updateVolumeButton();
+            });
+
+            // Rueda del mouse para controlar volumen sobre el botón de volumen
+            volumeBtn.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                let newVolume = Math.max(0, Math.min(1, floatingVideo.volume + delta));
+                
+                floatingVideo.volume = newVolume;
+                heroVideo.volume = newVolume;
+                
+                if (newVolume > 0) {
+                    floatingVideo.muted = false;
+                    heroVideo.muted = false;
+                }
+                
+                updateVolumeButton();
+            });
+
             // Barra de progreso
             floatingVideo.addEventListener('timeupdate', function() {
                 const progress = (floatingVideo.currentTime / floatingVideo.duration) * 100;
@@ -1761,6 +1884,16 @@
                 // Sincronizar con video hero (con tolerancia para evitar loops)
                 if (Math.abs(heroVideo.currentTime - floatingVideo.currentTime) > 2) {
                     heroVideo.currentTime = floatingVideo.currentTime;
+                }
+            });
+
+            // Sincronizar cambios de volumen
+            floatingVideo.addEventListener('volumechange', function() {
+                updateVolumeButton();
+                // Sincronizar con video hero
+                if (Math.abs(heroVideo.volume - floatingVideo.volume) > 0.05) {
+                    heroVideo.volume = floatingVideo.volume;
+                    heroVideo.muted = floatingVideo.muted;
                 }
             });
 
@@ -1829,6 +1962,9 @@
                 const secs = Math.floor(seconds % 60);
                 return `${minutes}:${secs.toString().padStart(2, '0')}`;
             }
+
+            // Inicializar estado del botón de volumen
+            updateVolumeButton();
         }
 
         // Función para generar sonido de pop
