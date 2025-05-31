@@ -87,6 +87,49 @@
             transform: scale(1.05);
         }
 
+        /* Botón de play central para móviles */
+        .mobile-play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .mobile-play-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .mobile-play-btn {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .mobile-play-btn:hover {
+            transform: scale(1.1);
+            background: white;
+        }
+
         .main-title {
             font-size: clamp(2.5rem, 8vw, 4.5rem);
             font-weight: 900;
@@ -422,15 +465,30 @@
         .gallery-item.expansion-feature::before {
             content: '🚀 OPORTUNIDAD DE EXPANSIÓN';
             position: absolute;
-            top: -15px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
+            right: 15px;
             background: linear-gradient(45deg, #45b7d1, #96ceb4);
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.85rem;
             font-weight: bold;
             z-index: 10;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            animation: expandionBadgeGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes expandionBadgeGlow {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 0 0 rgba(69, 183, 209, 0.7);
+            }
+            50% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 0 8px rgba(69, 183, 209, 0.3);
+            }
         }
 
         .gallery-item:nth-child(1) { animation-delay: 0.1s; }
@@ -758,10 +816,11 @@
             }
             
             .gallery-item.expansion-feature::before {
-                font-size: 0.7rem;
-                padding: 3px 10px;
-                top: -12px;
+                font-size: 0.75rem;
+                padding: 6px 12px;
+                top: 10px;
                 left: 10px;
+                right: 10px;
             }
 
             /* Ajustes para móvil del video flotante */
@@ -782,18 +841,37 @@
                 font-size: 0.7rem;
                 padding: 8px;
             }
+
+            /* Ajustes para botón de play móvil */
+            .mobile-play-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .video-toggle-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
     <section class="hero-section">
-        <video class="hero-video" id="heroVideo" muted loop poster="./assets/videos/tour-poster.jpg">
-            <source src="./assets/videos/tour-completo.mp4" type="video/mp4" media="(min-width: 768px)">
-            <source src="./assets/videos/tour-completo-compressed.mp4" type="video/mp4" media="(max-width: 767px)">
+        <video class="hero-video" id="heroVideo" muted loop playsinline preload="metadata" poster="./assets/videos/tour-poster.jpg">
+            <source src="./assets/videos/tour-completo.mp4" type="video/mp4">
+            <source src="./assets/videos/tour-completo-compressed.mp4" type="video/mp4">
             Tu navegador no soporta video HTML5.
         </video>
         
         <div class="hero-overlay"></div>
+        
+        <!-- Overlay de play para móviles -->
+        <div class="mobile-play-overlay" id="mobilePlayOverlay">
+            <button class="mobile-play-btn" id="mobilePlayBtn">▶️</button>
+        </div>
         
         <div class="floating-cards" id="floating-cards"></div>
         
@@ -992,7 +1070,7 @@
             </div>
         </div>
         
-        <video class="floating-video" id="floatingVideo" muted>
+        <video class="floating-video" id="floatingVideo" muted playsinline preload="metadata">
             <source src="./assets/videos/tour-completo.mp4" type="video/mp4">
             Tu navegador no soporta video HTML5.
         </video>
@@ -1055,41 +1133,132 @@
             }
         }
 
-        // Sistema de gestión de video inteligente
+        // Sistema de gestión de video inteligente con soporte móvil mejorado
         function initializeVideoSystem() {
             const video = document.getElementById('heroVideo');
             const toggleBtn = document.getElementById('videoToggle');
             const toggleText = document.getElementById('videoToggleText');
+            const mobilePlayOverlay = document.getElementById('mobilePlayOverlay');
+            const mobilePlayBtn = document.getElementById('mobilePlayBtn');
             
             let isPlaying = false;
-            
-            // Control de reproducción de video
-            toggleBtn.addEventListener('click', function() {
-                if (isPlaying) {
-                    video.pause();
-                    toggleText.textContent = '▶️ Reproducir Video';
-                    isPlaying = false;
-                } else {
-                    video.play().catch(e => {
-                        console.log('Autoplay bloqueado por el navegador');
-                    });
-                    toggleText.textContent = '⏸️ Pausar Video';
+            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            let hasUserInteracted = false;
+
+            // Función para detectar si es dispositivo móvil
+            function isMobileDevice() {
+                return window.innerWidth <= 768 || isMobile;
+            }
+
+            // Mostrar overlay de play en móviles
+            function showMobilePlayOverlay() {
+                if (isMobileDevice() && !hasUserInteracted) {
+                    mobilePlayOverlay.classList.add('show');
+                }
+            }
+
+            // Ocultar overlay de play
+            function hideMobilePlayOverlay() {
+                mobilePlayOverlay.classList.remove('show');
+                hasUserInteracted = true;
+            }
+
+            // Función para intentar reproducir video
+            async function tryPlayVideo() {
+                try {
+                    await video.play();
                     isPlaying = true;
+                    toggleText.textContent = '⏸️ Pausar Video';
+                    hideMobilePlayOverlay();
+                    return true;
+                } catch (error) {
+                    console.log('Autoplay bloqueado:', error);
+                    if (isMobileDevice()) {
+                        showMobilePlayOverlay();
+                    }
+                    return false;
+                }
+            }
+
+            // Función para pausar video
+            function pauseVideo() {
+                video.pause();
+                isPlaying = false;
+                toggleText.textContent = '▶️ Reproducir Video';
+            }
+
+            // Control de reproducción desde el botón principal
+            toggleBtn.addEventListener('click', async function() {
+                if (isPlaying) {
+                    pauseVideo();
+                } else {
+                    await tryPlayVideo();
                 }
             });
 
-            // Intentar autoplay silencioso en carga
-            video.addEventListener('canplaythrough', function() {
-                if (window.innerWidth > 768) { // Solo en desktop
-                    video.play().then(() => {
-                        isPlaying = true;
-                        toggleText.textContent = '⏸️ Pausar Video';
-                    }).catch(() => {
-                        // Si falla el autoplay, mostrar botón para iniciar
-                        toggleText.textContent = '▶️ Reproducir Video';
-                    });
+            // Control desde el botón móvil central
+            mobilePlayBtn.addEventListener('click', async function() {
+                await tryPlayVideo();
+            });
+
+            // Event listeners para estados del video
+            video.addEventListener('play', function() {
+                isPlaying = true;
+                toggleText.textContent = '⏸️ Pausar Video';
+                hideMobilePlayOverlay();
+            });
+
+            video.addEventListener('pause', function() {
+                isPlaying = false;
+                toggleText.textContent = '▶️ Reproducir Video';
+            });
+
+            video.addEventListener('ended', function() {
+                isPlaying = false;
+                toggleText.textContent = '▶️ Reproducir Video';
+                if (isMobileDevice()) {
+                    showMobilePlayOverlay();
                 }
             });
+
+            // Intentar autoplay cuando el video está listo
+            video.addEventListener('canplaythrough', async function() {
+                if (!isMobileDevice() && !hasUserInteracted) {
+                    // Solo intentar autoplay en desktop
+                    const played = await tryPlayVideo();
+                    if (!played) {
+                        // Si falla en desktop, mostrar botón
+                        toggleText.textContent = '▶️ Reproducir Video';
+                    }
+                } else {
+                    // En móviles, siempre mostrar overlay inicial
+                    showMobilePlayOverlay();
+                }
+            });
+
+            // Manejar cambios de orientación en móviles
+            window.addEventListener('orientationchange', function() {
+                setTimeout(() => {
+                    if (isMobileDevice() && !isPlaying && !hasUserInteracted) {
+                        showMobilePlayOverlay();
+                    }
+                }, 500);
+            });
+
+            // Detectar primer toque/click del usuario
+            document.addEventListener('touchstart', function() {
+                hasUserInteracted = true;
+            }, { once: true });
+
+            document.addEventListener('click', function() {
+                hasUserInteracted = true;
+            }, { once: true });
+
+            // Inicialización
+            if (isMobileDevice()) {
+                // En móviles, mostrar overlay después de cargar
+                setTimeout(showMobilePlayOverlay, 1000);
+            }
         }
 
         // Sistema de modal para vista completa de imágenes
@@ -1209,7 +1378,7 @@
             }
         }
 
-        // Sistema de video flotante Picture-in-Picture
+        // Sistema de video flotante Picture-in-Picture con soporte móvil mejorado
         function initializeFloatingVideo() {
             const heroVideo = document.getElementById('heroVideo');
             const floatingContainer = document.getElementById('floatingVideoContainer');
@@ -1226,11 +1395,12 @@
             let isFloatingVideoVisible = false;
             let isMinimized = false;
             let showIndicator = true;
+            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
             // Intersection Observer para detectar cuando el video hero sale del viewport
             const heroObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.intersectionRatio < 0.5 && heroVideo.currentTime > 0) {
+                    if (entry.intersectionRatio < 0.5 && heroVideo.currentTime > 0 && !heroVideo.paused) {
                         // Video hero no está visible y está reproduciéndose
                         showFloatingVideo();
                     } else if (entry.intersectionRatio >= 0.5) {
@@ -1244,9 +1414,9 @@
 
             heroObserver.observe(heroVideo);
 
-            // Mostrar indicador de scroll al principio
+            // Mostrar indicador de scroll al principio (solo en desktop)
             setTimeout(() => {
-                if (showIndicator) {
+                if (showIndicator && !isMobile) {
                     scrollIndicator.classList.add('show');
                     setTimeout(() => {
                         scrollIndicator.classList.remove('show');
@@ -1258,10 +1428,13 @@
                 if (!isFloatingVideoVisible) {
                     // Sincronizar tiempo de reproducción
                     floatingVideo.currentTime = heroVideo.currentTime;
-                    floatingVideo.muted = heroVideo.muted;
+                    floatingVideo.muted = true; // Siempre muted para evitar problemas
                     
                     if (!heroVideo.paused) {
-                        floatingVideo.play();
+                        // Intentar reproducir el video flotante
+                        floatingVideo.play().catch(e => {
+                            console.log('Error reproduciendo video flotante:', e);
+                        });
                     }
                     
                     floatingContainer.classList.add('visible');
@@ -1283,11 +1456,15 @@
             }
 
             // Controles del video flotante
-            floatingPlayBtn.addEventListener('click', function() {
+            floatingPlayBtn.addEventListener('click', async function() {
                 if (floatingVideo.paused) {
-                    floatingVideo.play();
-                    heroVideo.play();
-                    floatingPlayBtn.textContent = '⏸️';
+                    try {
+                        await floatingVideo.play();
+                        await heroVideo.play();
+                        floatingPlayBtn.textContent = '⏸️';
+                    } catch (e) {
+                        console.log('Error al reproducir:', e);
+                    }
                 } else {
                     floatingVideo.pause();
                     heroVideo.pause();
@@ -1305,8 +1482,8 @@
                 const duration = formatTime(floatingVideo.duration);
                 floatingTime.textContent = `${currentTime} / ${duration}`;
                 
-                // Sincronizar con video hero
-                if (Math.abs(heroVideo.currentTime - floatingVideo.currentTime) > 1) {
+                // Sincronizar con video hero (con tolerancia para evitar loops)
+                if (Math.abs(heroVideo.currentTime - floatingVideo.currentTime) > 2) {
                     heroVideo.currentTime = floatingVideo.currentTime;
                 }
             });
@@ -1318,8 +1495,10 @@
                 const clickRatio = clickX / rect.width;
                 const newTime = clickRatio * floatingVideo.duration;
                 
-                floatingVideo.currentTime = newTime;
-                heroVideo.currentTime = newTime;
+                if (!isNaN(newTime)) {
+                    floatingVideo.currentTime = newTime;
+                    heroVideo.currentTime = newTime;
+                }
             });
 
             // Botón minimizar
@@ -1359,6 +1538,11 @@
 
             floatingVideo.addEventListener('pause', function() {
                 floatingPlayBtn.textContent = '▶️';
+            });
+
+            // Manejar errores de video
+            floatingVideo.addEventListener('error', function(e) {
+                console.log('Error en video flotante:', e);
             });
 
             // Función para formatear tiempo
