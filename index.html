@@ -97,7 +97,7 @@
         }
 
         .video-toggle-btn:hover::after {
-            content: 'Autoplay inteligente activado • Clic para activar audio si es necesario';
+            content: 'Clic para reproducir/pausar • Doble clic para audio';
             position: absolute;
             bottom: -40px;
             left: 50%;
@@ -648,6 +648,7 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
+            animation: pulse-ring 2s infinite;
         }
 
         .floating-video-container.minimized .floating-video {
@@ -778,11 +779,7 @@
             font-family: 'Courier New', monospace;
         }
 
-        /* Animación de pulso para el video minimizado */
-        .floating-video-container.minimized {
-            animation: pulse-ring 2s infinite;
-        }
-
+        /* Indicadores y efectos simplificados */
         @keyframes pulse-ring {
             0% {
                 box-shadow: 0 0 0 0 rgba(69, 183, 209, 0.7);
@@ -792,40 +789,6 @@
             }
             100% {
                 box-shadow: 0 0 0 20px rgba(69, 183, 209, 0);
-            }
-        }
-
-        /* Indicador de scroll para mostrar que hay video flotante */
-        .scroll-indicator {
-            position: fixed;
-            top: 50%;
-            right: 30px;
-            transform: translateY(-50%);
-            background: rgba(69, 183, 209, 0.9);
-            color: white;
-            padding: 10px;
-            border-radius: 25px;
-            font-size: 0.8rem;
-            z-index: 8888;
-            opacity: 0;
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-
-        .scroll-indicator.show {
-            opacity: 1;
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(-50%);
-            }
-            40% {
-                transform: translateY(-60%);
-            }
-            60% {
-                transform: translateY(-55%);
             }
         }
 
@@ -1045,12 +1008,6 @@
             .floating-video-container.minimized {
                 width: 60px;
                 height: 60px;
-            }
-
-            .scroll-indicator {
-                right: 20px;
-                font-size: 0.7rem;
-                padding: 8px;
             }
 
             /* Ajustes para botón de play móvil */
@@ -1310,7 +1267,7 @@
         <img class="modal-content" id="modalImage">
     </div>
 
-    <!-- Video flotante Picture-in-Picture -->
+    <!-- Video flotante Picture-in-Picture SIMPLIFICADO -->
     <div class="floating-video-container" id="floatingVideoContainer">
         <div class="floating-header">
             <div class="floating-title">🏫 Tour Virtual</div>
@@ -1329,16 +1286,7 @@
         
         <div class="floating-controls">
             <button class="floating-play-btn" id="floatingPlayBtn">▶️</button>
-            <div class="floating-progress" id="floatingProgress">
-                <div class="floating-progress-bar" id="floatingProgressBar"></div>
-            </div>
-            <div class="floating-time" id="floatingTime">0:00 / 0:00</div>
         </div>
-    </div>
-
-    <!-- Indicador de scroll -->
-    <div class="scroll-indicator" id="scrollIndicator">
-        ⬇️ Scroll para video flotante
     </div>
 
     <!-- Botón flotante de WhatsApp -->
@@ -1424,8 +1372,11 @@
     </section>
 
     <script>
-        // Variables globales para compartir entre sistemas
-        let globalHideAudioPrompt = null;
+        // Variables globales para compartir entre sistemas (SIMPLIFICADAS)
+        window.videoSystems = {
+            hero: null,
+            floating: null
+        };
 
         // Crear elementos flotantes
         function createFloatingElements() {
@@ -2657,15 +2608,17 @@
             }
         }
 
-        // Inicialización completa del sistema multimedia
+        // Inicialización completa del sistema multimedia SIMPLIFICADO
         document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar todos los sistemas
+            console.log('🚀 Inicializando sistemas de video...');
+            
+            // Inicializar sistemas básicos
             createFloatingElements();
             initializeVideoSystem();
             initializeImageModal();
-            initializeFloatingVideo(); // Nueva funcionalidad
+            initializeFloatingVideo();
             
-            // Inicializar efectos de galería existentes
+            // Efectos de galería simples
             const galleryItems = document.querySelectorAll('.gallery-item');
             galleryItems.forEach(item => {
                 item.addEventListener('mouseenter', function() {
@@ -2679,43 +2632,16 @@
                 });
             });
 
-            // Efecto especial para el área de expansión
-            const expansionItem = document.querySelector('.expansion-feature');
-            if (expansionItem) {
-                setInterval(() => {
-                    expansionItem.style.boxShadow = '0 0 30px rgba(69, 183, 209, 0.6)';
-                    setTimeout(() => {
-                        expansionItem.style.boxShadow = '0 0 20px rgba(69, 183, 209, 0.3)';
-                    }, 1000);
-                }, 3000);
-            }
+            console.log('✅ Sistemas inicializados correctamente');
         });
 
-        // Animación parallax suave con auto-verificación del botón (MEJORADA)
+        // Animación parallax simple
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
             const hero = document.querySelector('.hero-section');
             
             if (hero) {
                 hero.style.transform = `translateY(${scrolled * 0.5}px)`;
-            }
-            
-            // Auto-verificación cuando se regresa al top
-            if (scrolled < 100 && window.heroVideoSystem) {
-                // Debounce para evitar demasiadas verificaciones
-                clearTimeout(window.scrollVerificationTimeout);
-                window.scrollVerificationTimeout = setTimeout(() => {
-                    console.log('🔝 Regreso al header detectado, verificando botón...');
-                    
-                    // Verificar si el botón necesita restauración
-                    if (!window.heroVideoSystem.buttonController.isWorking()) {
-                        console.log('🔧 Botón necesita restauración tras scroll');
-                        window.heroVideoSystem.restoreHeroVideoSystem();
-                    } else {
-                        // Solo sincronizar estado si el botón está funcionando
-                        window.heroVideoSystem.syncState();
-                    }
-                }, 300);
             }
         });
     </script>
