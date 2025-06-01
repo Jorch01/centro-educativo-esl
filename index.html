@@ -88,7 +88,7 @@
         }
 
         .video-toggle-btn:hover::after {
-            content: 'Doble clic para audio';
+            content: 'Autoplay inteligente activado • Clic para activar audio si es necesario';
             position: absolute;
             bottom: -35px;
             left: 50%;
@@ -1090,7 +1090,7 @@
 </head>
 <body>
     <section class="hero-section">
-        <video class="hero-video" id="heroVideo" muted loop playsinline preload="metadata" poster="./assets/videos/tour-poster.jpg">
+        <video class="hero-video" id="heroVideo" loop playsinline preload="metadata" poster="./assets/videos/tour-poster.jpg">
             <source src="./assets/videos/tour-completo.mp4" type="video/mp4">
             <source src="./assets/videos/tour-completo-compressed.mp4" type="video/mp4">
             Tu navegador no soporta video HTML5.
@@ -1301,7 +1301,7 @@
             </div>
         </div>
         
-        <video class="floating-video" id="floatingVideo" muted playsinline preload="metadata">
+        <video class="floating-video" id="floatingVideo" playsinline preload="metadata">
             <source src="./assets/videos/tour-completo.mp4" type="video/mp4">
             Tu navegador no soporta video HTML5.
         </video>
@@ -1403,6 +1403,9 @@
     </section>
 
     <script>
+        // Variables globales para compartir entre sistemas
+        let globalHideAudioPrompt = null;
+
         // Crear elementos flotantes
         function createFloatingElements() {
             const container = document.getElementById('floating-cards');
@@ -1456,36 +1459,80 @@
                 hasUserInteracted = true;
             }
 
-            // Función para intentar reproducir video con audio
-            async function tryPlayVideoWithAudio() {
+            // Función para intentar autoplay inteligente
+            async function attemptSmartAutoplay() {
                 try {
-                    // Activar audio cuando el usuario interactúa conscientemente
+                    // Primero intentar con audio
                     video.muted = false;
+                    video.volume = 0.7;
                     hasAudio = true;
                     await video.play();
                     isPlaying = true;
-                    toggleText.textContent = '⏸️ Pausar Video 🔊';
+                    updateToggleText();
                     hideMobilePlayOverlay();
+                    console.log('✅ Autoplay con audio exitoso');
+                    return true;
+                } catch (error) {
+                    console.log('❌ Autoplay con audio bloqueado, intentando sin audio...');
+                    try {
+                        // Fallback: sin audio pero preparado para activarlo
+                        video.muted = true;
+                        hasAudio = false;
+                        await video.play();
+                        isPlaying = true;
+                        updateToggleText();
+                        hideMobilePlayOverlay();
+                        
+                        // Mostrar notificación sutil para activar audio
+                        showAudioPrompt();
+                        console.log('✅ Autoplay sin audio - clic para activar audio');
+                        return true;
+                    } catch (finalError) {
+                        console.log('❌ Autoplay completamente bloqueado');
+                        isPlaying = false;
+                        updateToggleText();
+                        if (isMobileDevice()) {
+                            showMobilePlayOverlay();
+                        }
+                        return false;
+                    }
+                }
+            }
+
+            // Función para intentar reproducir video con audio
+            async function tryPlayVideoWithAudio() {
+                try {
+                    // Mantener audio activado por defecto
+                    video.muted = false;
+                    video.volume = 0.7; // Volumen al 70% por defecto
+                    hasAudio = true;
+                    await video.play();
+                    isPlaying = true;
+                    updateToggleText();
+                    hideMobilePlayOverlay();
+                    hideAudioPrompt(); // Ocultar prompt si estaba visible
                     return true;
                 } catch (error) {
                     console.log('Error reproduciendo con audio:', error);
-                    // Fallback: intentar sin audio
+                    // Fallback: intentar sin audio solo si es necesario para autoplay
                     return await tryPlayVideoMuted();
                 }
             }
 
-            // Función para intentar reproducir video sin audio (autoplay)
+            // Función para intentar reproducir video sin audio (solo fallback para autoplay)
             async function tryPlayVideoMuted() {
                 try {
                     video.muted = true;
                     hasAudio = false;
                     await video.play();
                     isPlaying = true;
-                    toggleText.textContent = '⏸️ Pausar Video 🔇';
+                    updateToggleText();
                     hideMobilePlayOverlay();
+                    showAudioPrompt(); // Mostrar prompt para activar audio
+                    console.log('Reproduciendo sin audio debido a políticas del navegador - haz clic para activar audio');
                     return true;
                 } catch (error) {
-                    console.log('Autoplay bloqueado:', error);
+                    console.log('Autoplay bloqueado completamente:', error);
                     if (isMobileDevice()) {
                         showMobilePlayOverlay();
                     }
@@ -1493,11 +1540,108 @@
                 }
             }
 
+            // Mostrar prompt sutil para activar audio
+            function showAudioPrompt() {
+                // Crear prompt si no existe
+                let audioPrompt = document.getElementById('audioPrompt');
+                if (!audioPrompt) {
+                    audioPrompt = document.createElement('div');
+                    audioPrompt.id = 'audioPrompt';
+                    audioPrompt.innerHTML = `
+                        <div style="
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+                            color: white;
+                            padding: 12px 20px;
+                            border-radius: 25px;
+                            font-size: 14px;
+                            font-weight: bold;
+                            z-index: 10000;
+                            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+                            cursor: pointer;
+                            animation: audioPromptPulse 2s infinite;
+                            backdrop-filter: blur(10px);
+                            border: 2px solid rgba(255,255,255,0.2);
+                            transition: all 0.3s ease;
+                            transform: translateX(100px);
+                            opacity: 0;
+                        ">
+                            🔊 Clic para activar audio
+                        </div>
+                    `;
+                    document.body.appendChild(audioPrompt);
+                    
+                    // Agregar animación CSS
+                    if (!document.getElementById('audioPromptStyles')) {
+                        const style = document.createElement('style');
+                        style.id = 'audioPromptStyles';
+                        style.textContent = `
+                            @keyframes audioPromptPulse {
+                                0% { transform: translateX(0) scale(1); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+                                50% { transform: translateX(0) scale(1.05); box-shadow: 0 12px 35px rgba(0,0,0,0.5); }
+                                100% { transform: translateX(0) scale(1); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                    
+                    // Click para activar audio
+                    audioPrompt.addEventListener('click', async function() {
+                        if (isPlaying && video.muted) {
+                            video.muted = false;
+                            video.volume = 0.7;
+                            hasAudio = true;
+                            updateToggleText();
+                            hideAudioPrompt();
+                        }
+                    });
+                    
+                    // Auto-ocultar después de 8 segundos
+                    setTimeout(() => {
+                        hideAudioPrompt();
+                    }, 8000);
+                }
+                
+                // Mostrar prompt con animación suave
+                setTimeout(() => {
+                    if (audioPrompt) {
+                        audioPrompt.style.opacity = '1';
+                        audioPrompt.style.transform = 'translateX(0)';
+                    }
+                }, 100);
+            }
+
+            // Ocultar prompt de audio
+            function hideAudioPrompt() {
+                const audioPrompt = document.getElementById('audioPrompt');
+                if (audioPrompt) {
+                    audioPrompt.style.opacity = '0';
+                    audioPrompt.style.transform = 'translateX(100px)';
+                    setTimeout(() => {
+                        if (audioPrompt.parentNode) {
+                            audioPrompt.parentNode.removeChild(audioPrompt);
+                        }
+                    }, 300);
+                }
+            }
+            
+            // Hacer función accesible globalmente
+            globalHideAudioPrompt = hideAudioPrompt;
+
             // Función para alternar audio
             function toggleAudio() {
                 if (isPlaying) {
-                    video.muted = !video.muted;
-                    hasAudio = !video.muted;
+                    if (video.muted) {
+                        video.muted = false;
+                        video.volume = 0.7; // Restaurar volumen por defecto
+                        hasAudio = true;
+                        hideAudioPrompt();
+                    } else {
+                        video.muted = true;
+                        hasAudio = false;
+                    }
                     updateToggleText();
                 }
             }
@@ -1566,16 +1710,20 @@
 
             // Intentar autoplay cuando el video está listo
             video.addEventListener('canplaythrough', async function() {
-                if (!isMobileDevice() && !hasUserInteracted) {
-                    // Solo intentar autoplay en desktop (sin audio para cumplir políticas)
-                    const played = await tryPlayVideoMuted();
-                    if (!played) {
-                        // Si falla en desktop, mostrar botón
-                        updateToggleText();
-                    }
+                // Configurar audio por defecto (activado)
+                video.volume = 0.7;
+                
+                if (!hasUserInteracted) {
+                    // Intentar autoplay inteligente
+                    await attemptSmartAutoplay();
                 } else {
-                    // En móviles, siempre mostrar overlay inicial
-                    showMobilePlayOverlay();
+                    // Usuario ya interactuó, configurar estado inicial
+                    video.muted = false;
+                    hasAudio = true;
+                    updateToggleText();
+                    if (isMobileDevice()) {
+                        showMobilePlayOverlay();
+                    }
                 }
             });
 
@@ -1588,6 +1736,36 @@
                 }, 500);
             });
 
+            // Detectar CUALQUIER interacción del usuario tempranamente para activar autoplay
+            function enableAutoplayOnInteraction() {
+                const enableAutoplay = async function() {
+                    if (!hasUserInteracted && video.readyState >= 3) {
+                        hasUserInteracted = true;
+                        
+                        // Si el video no está reproduciéndose, intentar autoplay
+                        if (video.paused) {
+                            await attemptSmartAutoplay();
+                        } else if (video.muted) {
+                            // Si está reproduciéndose pero sin audio, activar audio
+                            video.muted = false;
+                            video.volume = 0.7;
+                            hasAudio = true;
+                            updateToggleText();
+                            hideAudioPrompt();
+                        }
+                    }
+                };
+
+                // Detectar múltiples tipos de interacción
+                ['click', 'touchstart', 'keydown', 'mousemove', 'scroll'].forEach(eventType => {
+                    document.addEventListener(eventType, enableAutoplay, { 
+                        once: true, 
+                        passive: true,
+                        capture: true 
+                    });
+                });
+            }
+
             // Detectar primer toque/click del usuario
             document.addEventListener('touchstart', function() {
                 hasUserInteracted = true;
@@ -1597,6 +1775,9 @@
                 hasUserInteracted = true;
             }, { once: true });
 
+            // Activar detección temprana de interacciones
+            enableAutoplayOnInteraction();
+
             // Inicialización
             if (isMobileDevice()) {
                 // En móviles, mostrar overlay después de cargar
@@ -1604,7 +1785,7 @@
             }
 
             // Agregar tooltip informativo
-            toggleBtn.title = 'Clic para reproducir/pausar • Doble clic para activar/desactivar audio';
+            toggleBtn.title = 'Autoplay inteligente • Se adapta a las políticas del navegador • Doble clic para alternar audio';
         }
 
         // Sistema de modal para vista completa de imágenes
@@ -1794,6 +1975,11 @@
                     isFloatingVideoVisible = true;
                     showIndicator = false;
                     scrollIndicator.classList.remove('show');
+                    
+                    // Ocultar prompt de audio del hero ya que ahora usamos el flotante
+                    if (globalHideAudioPrompt) {
+                        globalHideAudioPrompt();
+                    }
                 }
             }
 
@@ -1830,6 +2016,13 @@
                     volumeBtn.textContent = '🔊';
                     volumeBtn.title = 'Volumen alto';
                 }
+            }
+
+            // Configuración inicial del video flotante con audio activado
+            function initializeFloatingVideoAudio() {
+                floatingVideo.muted = false;
+                floatingVideo.volume = 0.7; // Volumen por defecto al 70%
+                updateVolumeButton();
             }
 
             // Controles del video flotante
@@ -1990,7 +2183,8 @@
                 return `${minutes}:${secs.toString().padStart(2, '0')}`;
             }
 
-            // Inicializar estado del botón de volumen
+            // Inicializar estado del botón de volumen y configuración de audio
+            initializeFloatingVideoAudio();
             updateVolumeButton();
         }
 
