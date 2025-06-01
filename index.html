@@ -1747,16 +1747,16 @@
             // Intersection Observer para detectar cuando el video hero sale del viewport
             const heroObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.intersectionRatio < 0.5 && heroVideo.currentTime > 0 && !heroVideo.paused) {
+                    if (entry.intersectionRatio < 0.3 && heroVideo.currentTime > 0 && !heroVideo.paused) {
                         // Video hero no está visible y está reproduciéndose
                         showFloatingVideo();
-                    } else if (entry.intersectionRatio >= 0.5) {
-                        // Video hero está visible
+                    } else if (entry.intersectionRatio >= 0.7) {
+                        // Video hero está claramente visible
                         hideFloatingVideo();
                     }
                 });
             }, {
-                threshold: [0.5]
+                threshold: [0.3, 0.7] // Umbrales más amplios para mayor estabilidad
             });
 
             heroObserver.observe(heroVideo);
@@ -1779,8 +1779,12 @@
                     floatingVideo.volume = heroVideo.volume;
                     updateVolumeButton();
                     
-                    if (!heroVideo.paused) {
-                        // Intentar reproducir el video flotante
+                    // PAUSAR el video hero para evitar reproducción simultánea
+                    const wasHeroPlaying = !heroVideo.paused;
+                    heroVideo.pause();
+                    
+                    if (wasHeroPlaying) {
+                        // Solo reproducir el video flotante si el hero estaba reproduciéndose
                         floatingVideo.play().catch(e => {
                             console.log('Error reproduciendo video flotante:', e);
                         });
@@ -1800,8 +1804,17 @@
                     heroVideo.muted = floatingVideo.muted;
                     heroVideo.volume = floatingVideo.volume;
                     
-                    floatingContainer.classList.remove('visible');
+                    // Si el video flotante estaba reproduciéndose, continuar con el hero
+                    const wasFloatingPlaying = !floatingVideo.paused;
                     floatingVideo.pause();
+                    
+                    if (wasFloatingPlaying) {
+                        heroVideo.play().catch(e => {
+                            console.log('Error reproduciendo video hero:', e);
+                        });
+                    }
+                    
+                    floatingContainer.classList.remove('visible');
                     isFloatingVideoVisible = false;
                 }
             }
@@ -1823,13 +1836,14 @@
             floatingPlayBtn.addEventListener('click', async function() {
                 if (floatingVideo.paused) {
                     try {
+                        // Solo reproducir el video flotante, mantener hero pausado
                         await floatingVideo.play();
-                        await heroVideo.play();
                         floatingPlayBtn.textContent = '⏸️';
                     } catch (e) {
                         console.log('Error al reproducir:', e);
                     }
                 } else {
+                    // Pausar ambos videos
                     floatingVideo.pause();
                     heroVideo.pause();
                     floatingPlayBtn.textContent = '▶️';
@@ -1935,9 +1949,22 @@
 
             // Botón cerrar
             closeFloatingBtn.addEventListener('click', function() {
+                // Sincronizar tiempo antes de cerrar
+                heroVideo.currentTime = floatingVideo.currentTime;
+                heroVideo.muted = floatingVideo.muted;
+                heroVideo.volume = floatingVideo.volume;
+                
+                // Ocultar video flotante y pausar ambos
                 hideFloatingVideo();
                 floatingVideo.pause();
                 heroVideo.pause();
+                
+                // Actualizar botón del video principal
+                const toggleText = document.getElementById('videoToggleText');
+                if (toggleText) {
+                    const hasAudio = !heroVideo.muted && heroVideo.volume > 0;
+                    toggleText.textContent = hasAudio ? '▶️ Reproducir Video 🔊' : '▶️ Reproducir Video 🔇';
+                }
             });
 
             // Actualizar estado del botón play/pause
