@@ -1853,14 +1853,191 @@
             document.addEventListener('floatingVideoHidden', function() {
                 console.log('📡 Evento recibido: video flotante oculto, restaurando hero');
                 if (window.heroVideoSystem) {
-                    window.heroVideoSystem.restoreHeroVideoSystem();
+                    // Usar el nuevo sistema de restauración robusta
+                    setTimeout(() => {
+                        window.heroVideoSystem.restoreHeroVideoSystem();
+                    }, 150);
                 }
             });
 
             // Agregar tooltip informativo y configuración final
             toggleBtn.title = 'Autoplay inteligente • Se adapta a las políticas del navegador • Doble clic para alternar audio';
             
-            // Función para sincronizar estado (CRÍTICA para resolver el bug)
+            // Test adicional: verificar botón al cargar página
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    console.log('🔍 Verificación post-carga de página');
+                    if (window.heroVideoSystem) {
+                        window.heroVideoSystem.buttonController.diagnose();
+                    }
+                    
+                    // Test completo
+                    testButtonFunctionality();
+                }, 2000);
+            });
+            
+            // Comando de debug fácil para el usuario (usar en consola)
+            window.debugHeroButton = function() {
+                console.log('🛠️ HERRAMIENTAS DE DEBUG DEL BOTÓN HERO:');
+                console.log('1️⃣ Diagnóstico completo:');
+                if (window.heroVideoSystem) {
+                    window.heroVideoSystem.buttonController.diagnose();
+                }
+                
+                console.log('2️⃣ Test de funcionalidad:');
+                const testResult = testButtonFunctionality();
+                
+                console.log('3️⃣ Estado del video:');
+                console.log(window.heroVideoSystem.getState());
+                
+                console.log('4️⃣ Comandos disponibles:');
+                console.log('- window.testHeroButton() → Ejecutar test');
+                console.log('- window.heroVideoSystem.restoreHeroVideoSystem() → Restaurar sistema');
+                console.log('- window.heroVideoSystem.emergencyRestore() → Restauración de emergencia');
+                
+                if (!testResult) {
+                    console.log('🔧 ¿Quieres intentar reparar automáticamente? Ejecuta:');
+                    console.log('window.heroVideoSystem.restoreHeroVideoSystem()');
+                }
+                
+                return {
+                    working: testResult,
+                    videoState: window.heroVideoSystem.getState(),
+                    buttonListeners: window.heroVideoSystem.buttonController.listeners.size
+                };
+            };
+            
+            // Sistema robusto de restauración del botón (SOLUCIÓN DEFINITIVA)
+            function createButtonController() {
+                const controller = {
+                    isActive: true,
+                    listeners: new Map(),
+                    
+                    // Agregar event listener con tracking
+                    addListener(event, handler, options = {}) {
+                        const wrappedHandler = (e) => {
+                            if (controller.isActive) {
+                                console.log(`🎯 Evento ${event} ejecutado en botón`);
+                                handler(e);
+                            }
+                        };
+                        
+                        toggleBtn.addEventListener(event, wrappedHandler, options);
+                        controller.listeners.set(event, { handler: wrappedHandler, original: handler, options });
+                        console.log(`✅ Listener ${event} agregado y rastreado`);
+                    },
+                    
+                    // Remover todos los listeners
+                    removeAllListeners() {
+                        controller.listeners.forEach((listenerData, event) => {
+                            toggleBtn.removeEventListener(event, listenerData.handler, listenerData.options);
+                        });
+                        controller.listeners.clear();
+                        console.log('🧹 Todos los listeners removidos');
+                    },
+                    
+                    // Restaurar todos los listeners
+                    restoreAllListeners() {
+                        console.log('🔄 Restaurando listeners del botón...');
+                        controller.removeAllListeners();
+                        controller.setupListeners();
+                    },
+                    
+                    // Configurar todos los event listeners
+                    setupListeners() {
+                        // Click principal
+                        controller.addListener('click', async function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('🎬 Botón de video clickeado - Estado actual:', isPlaying ? 'reproduciendo' : 'pausado');
+                            
+                            if (isPlaying) {
+                                pauseVideo();
+                                console.log('⏸️ Video pausado');
+                            } else {
+                                const success = await tryPlayVideoWithAudio();
+                                console.log('▶️ Intento de reproducir video:', success ? 'exitoso' : 'falló');
+                            }
+                        });
+
+                        // Touch para móviles
+                        controller.addListener('touchend', async function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('👆 Touch en botón de video');
+                            
+                            if (isPlaying) {
+                                pauseVideo();
+                            } else {
+                                await tryPlayVideoWithAudio();
+                            }
+                        });
+
+                        // Doble click para audio
+                        controller.addListener('dblclick', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('🔄 Doble clic - alternando audio');
+                            toggleAudio();
+                        });
+
+                        // Feedback visual
+                        controller.addListener('mousedown', function(e) {
+                            console.log('🖱️ Mousedown en botón - botón funcionando');
+                            toggleBtn.style.transform = 'scale(0.95)';
+                        });
+
+                        controller.addListener('mouseup', function(e) {
+                            toggleBtn.style.transform = '';
+                        });
+
+                        // Hover para debug
+                        controller.addListener('mouseenter', function() {
+                            console.log('🖱️ Mouse sobre el botón - botón detectado correctamente');
+                        });
+
+                        controller.isActive = true;
+                        console.log('✅ Todos los listeners configurados y activos');
+                    },
+                    
+                    // Verificar si el botón está funcionando
+                    isWorking() {
+                        const rect = toggleBtn.getBoundingClientRect();
+                        const hasListeners = controller.listeners.size > 0;
+                        const isVisible = rect.width > 0 && rect.height > 0;
+                        
+                        return hasListeners && isVisible && controller.isActive;
+                    },
+                    
+                    // Diagnóstico completo
+                    diagnose() {
+                        const rect = toggleBtn.getBoundingClientRect();
+                        const diagnosis = {
+                            isActive: controller.isActive,
+                            hasListeners: controller.listeners.size > 0,
+                            listenerCount: controller.listeners.size,
+                            isVisible: rect.width > 0 && rect.height > 0,
+                            position: rect,
+                            styles: {
+                                position: getComputedStyle(toggleBtn).position,
+                                zIndex: getComputedStyle(toggleBtn).zIndex,
+                                pointerEvents: getComputedStyle(toggleBtn).pointerEvents,
+                                opacity: getComputedStyle(toggleBtn).opacity
+                            }
+                        };
+                        
+                        console.log('🔍 Diagnóstico del botón:', diagnosis);
+                        return diagnosis;
+                    }
+                };
+                
+                return controller;
+            }
+
+            // Crear controlador del botón
+            const buttonController = createButtonController();
+
+            // Función para sincronizar estado (MEJORADA)
             function syncState() {
                 console.log('🔄 Sincronizando estado del video hero');
                 
@@ -1871,14 +2048,18 @@
                 // Actualizar texto del botón
                 updateToggleText();
                 
-                // Verificar que el botón siga siendo funcional
-                const rect = toggleBtn.getBoundingClientRect();
-                if (rect.width === 0 || rect.height === 0) {
-                    console.warn('⚠️ Botón no visible, forzando reposicionamiento');
+                // Verificar y restaurar botón si es necesario
+                if (!buttonController.isWorking()) {
+                    console.warn('⚠️ Botón no funcional, restaurando completamente...');
+                    buttonController.restoreAllListeners();
+                    
+                    // Verificar estilos del botón
                     toggleBtn.style.position = 'absolute';
                     toggleBtn.style.bottom = '30px';
                     toggleBtn.style.right = '30px';
                     toggleBtn.style.zIndex = '10001';
+                    toggleBtn.style.pointerEvents = 'auto';
+                    toggleBtn.style.opacity = '1';
                 }
                 
                 console.log('✅ Estado sincronizado:', {
@@ -1886,16 +2067,22 @@
                     hasAudio,
                     muted: video.muted,
                     volume: video.volume,
-                    buttonVisible: rect.width > 0 && rect.height > 0
+                    buttonWorking: buttonController.isWorking()
                 });
             }
 
-            // Función para restaurar completamente el sistema
+            // Función para restaurar completamente el sistema (MEJORADA)
             function restoreHeroVideoSystem() {
                 console.log('🔧 Restaurando sistema completo del video hero');
                 
+                // Diagnóstico previo
+                buttonController.diagnose();
+                
                 // Re-sincronizar estado
                 syncState();
+                
+                // Forzar restauración de listeners
+                buttonController.restoreAllListeners();
                 
                 // Asegurar que el overlay móvil esté en el estado correcto
                 if (isMobileDevice()) {
@@ -1908,31 +2095,117 @@
                     hideMobilePlayOverlay();
                 }
                 
-                // Forzar actualización de eventos si es necesario
+                // Verificación final
                 setTimeout(() => {
-                    if (!toggleBtn.onclick && !toggleBtn._hasClickListener) {
-                        console.log('🔧 Re-agregando event listeners del botón');
-                        attachButtonEvents();
+                    if (buttonController.isWorking()) {
+                        console.log('✅ Sistema completamente restaurado');
+                    } else {
+                        console.error('❌ Falló la restauración, intentando método de emergencia...');
+                        emergencyButtonRestore();
                     }
-                }, 50);
+                }, 100);
             }
 
-            // Función para adjuntar eventos del botón (separada para reutilización)
-            function attachButtonEvents() {
-                // Marcar que ya tiene listeners
-                toggleBtn._hasClickListener = true;
+                    // Método de emergencia para restaurar el botón
+            function emergencyButtonRestore() {
+                console.log('🚨 Ejecutando restauración de emergencia...');
                 
-                // Los event listeners ya están definidos arriba, 
-                // esta función es para verificación
-                console.log('✅ Event listeners del botón verificados');
+                try {
+                    // Actualizar referencia al botón por si se perdió
+                    const currentBtn = document.getElementById('videoToggle');
+                    if (currentBtn) {
+                        toggleBtn = currentBtn;
+                    }
+                    
+                    // Limpiar todos los event listeners existentes (si los hay)
+                    const newButton = toggleBtn.cloneNode(true);
+                    const parent = toggleBtn.parentNode;
+                    
+                    // Reemplazar el botón completamente
+                    parent.replaceChild(newButton, toggleBtn);
+                    toggleBtn = newButton;
+                    
+                    // Re-configurar estilos críticos
+                    toggleBtn.style.position = 'absolute';
+                    toggleBtn.style.bottom = '30px';
+                    toggleBtn.style.right = '30px';
+                    toggleBtn.style.zIndex = '10001';
+                    toggleBtn.style.pointerEvents = 'auto';
+                    toggleBtn.style.opacity = '1';
+                    toggleBtn.style.cursor = 'pointer';
+                    toggleBtn.title = 'Autoplay inteligente • Se adapta a las políticas del navegador • Doble clic para alternar audio';
+                    
+                    // Re-crear controlador con el nuevo botón
+                    if (typeof createButtonController === 'function') {
+                        window.heroVideoSystem.buttonController = createButtonController();
+                        window.heroVideoSystem.buttonController.setupListeners();
+                    } else {
+                        console.error('❌ createButtonController no disponible');
+                    }
+                    
+                    console.log('🆘 Restauración de emergencia completada exitosamente');
+                    
+                    // Verificar que funciona
+                    setTimeout(() => {
+                        if (window.heroVideoSystem.buttonController && window.heroVideoSystem.buttonController.isWorking()) {
+                            console.log('✅ Botón restaurado y funcionando correctamente');
+                        } else {
+                            console.error('❌ Falló la restauración de emergencia');
+                        }
+                    }, 200);
+                    
+                } catch (error) {
+                    console.error('💥 Error en restauración de emergencia:', error);
+                }
             }
 
-            // Exponer funciones globalmente para el sistema flotante
+            // Exponer funciones globalmente para el sistema flotante (ACTUALIZADO)
             window.heroVideoSystem = {
                 syncState,
                 restoreHeroVideoSystem,
-                getState: () => ({ isPlaying, hasAudio, hasUserInteracted })
+                getState: () => ({ isPlaying, hasAudio, hasUserInteracted }),
+                buttonController,
+                emergencyRestore: emergencyButtonRestore
             };
+
+            // Verificación adicional: test manual del botón cada vez que sea necesario
+            function testButtonFunctionality() {
+                console.log('🧪 Ejecutando test de funcionalidad del botón...');
+                
+                const tests = {
+                    hasElement: !!toggleBtn,
+                    isVisible: toggleBtn && toggleBtn.getBoundingClientRect().width > 0,
+                    hasController: !!buttonController,
+                    hasListeners: buttonController && buttonController.listeners.size > 0,
+                    isActive: buttonController && buttonController.isActive,
+                    hasTooltip: toggleBtn && !!toggleBtn.title,
+                    hasCorrectStyles: toggleBtn && getComputedStyle(toggleBtn).zIndex === '10001'
+                };
+                
+                console.log('🧪 Resultados del test:', tests);
+                
+                const allPassed = Object.values(tests).every(test => test === true);
+                
+                if (!allPassed) {
+                    console.warn('⚠️ Test falló, ejecutando reparación automática...');
+                    if (window.heroVideoSystem) {
+                        window.heroVideoSystem.restoreHeroVideoSystem();
+                    }
+                }
+                
+                return allPassed;
+            }
+            
+            // Exponer test globalmente para debug manual
+            window.testHeroButton = testButtonFunctionality;
+
+            // Configurar listeners iniciales
+            buttonController.setupListeners();
+            
+            // Ejecutar test inicial después de un delay
+            setTimeout(() => {
+                testButtonFunctionality();
+            }, 1000);
         }
 
         // Sistema de modal para vista completa de imágenes
@@ -2418,7 +2691,7 @@
             }
         });
 
-        // Animación parallax suave con auto-verificación del botón
+        // Animación parallax suave con auto-verificación del botón (MEJORADA)
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
             const hero = document.querySelector('.hero-section');
@@ -2433,7 +2706,15 @@
                 clearTimeout(window.scrollVerificationTimeout);
                 window.scrollVerificationTimeout = setTimeout(() => {
                     console.log('🔝 Regreso al header detectado, verificando botón...');
-                    window.heroVideoSystem.syncState();
+                    
+                    // Verificar si el botón necesita restauración
+                    if (!window.heroVideoSystem.buttonController.isWorking()) {
+                        console.log('🔧 Botón necesita restauración tras scroll');
+                        window.heroVideoSystem.restoreHeroVideoSystem();
+                    } else {
+                        // Solo sincronizar estado si el botón está funcionando
+                        window.heroVideoSystem.syncState();
+                    }
                 }, 300);
             }
         });
