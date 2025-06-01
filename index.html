@@ -77,14 +77,17 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
-            z-index: 4;
+            z-index: 10001; /* Aumentar z-index para estar sobre todo */
             font-size: 14px;
             font-weight: bold;
+            pointer-events: auto; /* Asegurar que sea clickeable */
+            user-select: none; /* Evitar selección de texto */
         }
 
         .video-toggle-btn:hover {
             background: rgba(255,255,255,0.3);
             transform: scale(1.05);
+            z-index: 10002; /* Más alto aún en hover */
         }
 
         .video-toggle-btn:hover::after {
@@ -122,6 +125,13 @@
         .mobile-play-overlay.show {
             opacity: 1;
             pointer-events: all;
+        }
+
+        /* Ocultar mobile overlay en desktop */
+        @media (min-width: 769px) {
+            .mobile-play-overlay {
+                display: none !important;
+            }
         }
 
         .mobile-play-btn {
@@ -185,6 +195,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            pointer-events: none; /* No interferir con otros elementos */
         }
 
         .floating-card {
@@ -203,6 +214,8 @@
             justify-content: center;
             font-size: 24px;
             user-select: none;
+            pointer-events: auto; /* Solo las burbujas son clickeables */
+            z-index: 1; /* Bajo z-index para no interferir con controles */
         }
 
         .floating-card:hover {
@@ -1441,15 +1454,20 @@
             let hasUserInteracted = false;
             let hasAudio = false;
 
-            // Función para detectar si es dispositivo móvil
+            // Función para detectar si es dispositivo móvil (mejorada)
             function isMobileDevice() {
-                return window.innerWidth <= 768 || isMobile;
+                return window.innerWidth <= 768 || 
+                       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                       ('ontouchstart' in window);
             }
 
-            // Mostrar overlay de play en móviles
+            // Mostrar overlay de play en móviles (solo móviles)
             function showMobilePlayOverlay() {
                 if (isMobileDevice() && !hasUserInteracted) {
                     mobilePlayOverlay.classList.add('show');
+                } else {
+                    // En desktop, asegurar que esté oculto
+                    mobilePlayOverlay.classList.remove('show');
                 }
             }
 
@@ -1662,24 +1680,35 @@
                 updateToggleText();
             }
 
-            // Control de reproducción desde el botón principal
-            toggleBtn.addEventListener('click', async function() {
+            // Control de reproducción desde el botón principal (mejorado)
+            toggleBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🎬 Botón de video clickeado - Estado actual:', isPlaying ? 'reproduciendo' : 'pausado');
+                
                 if (isPlaying) {
                     pauseVideo();
+                    console.log('⏸️ Video pausado');
                 } else {
                     // Cuando el usuario hace clic, intentar con audio
-                    await tryPlayVideoWithAudio();
+                    const success = await tryPlayVideoWithAudio();
+                    console.log('▶️ Intento de reproducir video:', success ? 'exitoso' : 'falló');
                 }
             });
 
-            // Control desde el botón móvil central
-            mobilePlayBtn.addEventListener('click', async function() {
+            // Control desde el botón móvil central (mejorado)
+            mobilePlayBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('📱 Botón móvil clickeado');
                 await tryPlayVideoWithAudio();
             });
 
-            // Doble clic en el botón para alternar audio
+            // Doble clic en el botón para alternar audio (mejorado)
             toggleBtn.addEventListener('dblclick', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
+                console.log('🔄 Doble clic - alternando audio');
                 toggleAudio();
             });
 
