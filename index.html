@@ -88,7 +88,7 @@
         }
 
         .video-toggle-btn:hover::after {
-            content: 'Audio activado por defecto • Doble clic para alternar';
+            content: 'Doble clic para audio';
             position: absolute;
             bottom: -35px;
             left: 50%;
@@ -1090,7 +1090,7 @@
 </head>
 <body>
     <section class="hero-section">
-        <video class="hero-video" id="heroVideo" loop playsinline preload="metadata" poster="./assets/videos/tour-poster.jpg">
+        <video class="hero-video" id="heroVideo" muted loop playsinline preload="metadata" poster="./assets/videos/tour-poster.jpg">
             <source src="./assets/videos/tour-completo.mp4" type="video/mp4">
             <source src="./assets/videos/tour-completo-compressed.mp4" type="video/mp4">
             Tu navegador no soporta video HTML5.
@@ -1301,7 +1301,7 @@
             </div>
         </div>
         
-        <video class="floating-video" id="floatingVideo" playsinline preload="metadata">
+        <video class="floating-video" id="floatingVideo" muted playsinline preload="metadata">
             <source src="./assets/videos/tour-completo.mp4" type="video/mp4">
             Tu navegador no soporta video HTML5.
         </video>
@@ -1459,35 +1459,33 @@
             // Función para intentar reproducir video con audio
             async function tryPlayVideoWithAudio() {
                 try {
-                    // Mantener audio activado por defecto
+                    // Activar audio cuando el usuario interactúa conscientemente
                     video.muted = false;
-                    video.volume = 0.7; // Volumen al 70% por defecto
                     hasAudio = true;
                     await video.play();
                     isPlaying = true;
-                    updateToggleText();
+                    toggleText.textContent = '⏸️ Pausar Video 🔊';
                     hideMobilePlayOverlay();
                     return true;
                 } catch (error) {
                     console.log('Error reproduciendo con audio:', error);
-                    // Fallback: intentar sin audio solo si es necesario para autoplay
+                    // Fallback: intentar sin audio
                     return await tryPlayVideoMuted();
                 }
             }
 
-            // Función para intentar reproducir video sin audio (solo fallback para autoplay)
+            // Función para intentar reproducir video sin audio (autoplay)
             async function tryPlayVideoMuted() {
                 try {
                     video.muted = true;
                     hasAudio = false;
                     await video.play();
                     isPlaying = true;
-                    updateToggleText();
+                    toggleText.textContent = '⏸️ Pausar Video 🔇';
                     hideMobilePlayOverlay();
-                    console.log('Reproduciendo sin audio debido a políticas del navegador - haz clic para activar audio');
                     return true;
                 } catch (error) {
-                    console.log('Autoplay bloqueado completamente:', error);
+                    console.log('Autoplay bloqueado:', error);
                     if (isMobileDevice()) {
                         showMobilePlayOverlay();
                     }
@@ -1498,14 +1496,8 @@
             // Función para alternar audio
             function toggleAudio() {
                 if (isPlaying) {
-                    if (video.muted) {
-                        video.muted = false;
-                        video.volume = 0.7; // Restaurar volumen por defecto
-                        hasAudio = true;
-                    } else {
-                        video.muted = true;
-                        hasAudio = false;
-                    }
+                    video.muted = !video.muted;
+                    hasAudio = !video.muted;
                     updateToggleText();
                 }
             }
@@ -1574,21 +1566,15 @@
 
             // Intentar autoplay cuando el video está listo
             video.addEventListener('canplaythrough', async function() {
-                // Configurar audio por defecto (activado)
-                video.muted = false;
-                video.volume = 0.7;
-                hasAudio = true;
-                
                 if (!isMobileDevice() && !hasUserInteracted) {
-                    // Intentar autoplay en desktop con audio
-                    const played = await tryPlayVideoWithAudio();
+                    // Solo intentar autoplay en desktop (sin audio para cumplir políticas)
+                    const played = await tryPlayVideoMuted();
                     if (!played) {
-                        // Si falla, mostrar botón
+                        // Si falla en desktop, mostrar botón
                         updateToggleText();
                     }
                 } else {
-                    // En móviles, configurar audio pero mostrar overlay
-                    updateToggleText();
+                    // En móviles, siempre mostrar overlay inicial
                     showMobilePlayOverlay();
                 }
             });
@@ -1618,7 +1604,7 @@
             }
 
             // Agregar tooltip informativo
-            toggleBtn.title = 'Clic para reproducir/pausar • Audio activado por defecto • Doble clic para alternar audio';
+            toggleBtn.title = 'Clic para reproducir/pausar • Doble clic para activar/desactivar audio';
         }
 
         // Sistema de modal para vista completa de imágenes
@@ -1846,13 +1832,6 @@
                 }
             }
 
-            // Configuración inicial del video flotante con audio activado
-            function initializeFloatingVideoAudio() {
-                floatingVideo.muted = false;
-                floatingVideo.volume = 0.7; // Volumen por defecto al 70%
-                updateVolumeButton();
-            }
-
             // Controles del video flotante
             floatingPlayBtn.addEventListener('click', async function() {
                 if (floatingVideo.paused) {
@@ -2011,8 +1990,7 @@
                 return `${minutes}:${secs.toString().padStart(2, '0')}`;
             }
 
-            // Inicializar estado del botón de volumen y configuración de audio
-            initializeFloatingVideoAudio();
+            // Inicializar estado del botón de volumen
             updateVolumeButton();
         }
 
