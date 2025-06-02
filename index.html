@@ -65,10 +65,16 @@
             position: relative;
         }
 
-        .video-toggle-btn {
+        .video-controls {
             position: absolute;
             bottom: 30px;
             right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 10001;
+        }
+
+        .video-btn {
             background: rgba(255,255,255,0.2);
             border: 2px solid rgba(255,255,255,0.5);
             border-radius: 50px;
@@ -77,43 +83,28 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
-            z-index: 10001; /* Aumentar z-index para estar sobre todo */
             font-size: 14px;
             font-weight: bold;
-            pointer-events: auto; /* Asegurar que sea clickeable */
-            user-select: none; /* Evitar selección de texto */
+            pointer-events: auto;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
         }
 
-        .video-toggle-btn:hover {
+        .video-btn:hover {
             background: rgba(255,255,255,0.3);
             transform: scale(1.05);
-            z-index: 10002; /* Más alto aún en hover */
+            box-shadow: 0 5px 20px rgba(255,255,255,0.3);
         }
 
-        .video-toggle-btn:active {
+        .video-btn:active {
             transform: scale(0.95);
             background: rgba(255,255,255,0.4);
-            box-shadow: 0 0 20px rgba(255,255,255,0.6);
         }
 
-        .video-toggle-btn:hover::after {
-            content: 'Autoplay inteligente activado • Clic para activar audio si es necesario';
-            position: absolute;
-            bottom: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            white-space: nowrap;
-            opacity: 0.9;
-            z-index: 10003;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        /* Botón de play central para móviles */
+        /* Overlay de play para móviles */
         .mobile-play-overlay {
             position: absolute;
             top: 0;
@@ -133,13 +124,6 @@
         .mobile-play-overlay.show {
             opacity: 1;
             pointer-events: all;
-        }
-
-        /* Ocultar mobile overlay en desktop */
-        @media (min-width: 769px) {
-            .mobile-play-overlay {
-                display: none !important;
-            }
         }
 
         .mobile-play-btn {
@@ -203,7 +187,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            pointer-events: none; /* No interferir con otros elementos */
+            pointer-events: none;
         }
 
         .floating-card {
@@ -222,8 +206,8 @@
             justify-content: center;
             font-size: 24px;
             user-select: none;
-            pointer-events: auto; /* Solo las burbujas son clickeables */
-            z-index: 1; /* Bajo z-index para no interferir con controles */
+            pointer-events: auto;
+            z-index: 1;
         }
 
         .floating-card:hover {
@@ -279,15 +263,167 @@
             100% { transform: translateY(-100px) rotate(360deg); }
         }
 
-        @keyframes particleExplode {
+        /* Video flotante mejorado */
+        .floating-video-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 200px;
+            background: rgba(0,0,0,0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .floating-video-container.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .floating-video-container.minimized {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
             0% {
-                opacity: 1;
-                transform: translate(0, 0) scale(1);
+                box-shadow: 0 0 0 0 rgba(69, 183, 209, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(69, 183, 209, 0.3);
             }
             100% {
-                opacity: 0;
-                transform: translate(var(--vx), var(--vy)) scale(0);
+                box-shadow: 0 0 0 20px rgba(69, 183, 209, 0);
             }
+        }
+
+        .floating-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .floating-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .floating-title {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: bold;
+            opacity: 0.9;
+        }
+
+        .floating-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .floating-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .floating-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .floating-video-container:hover .floating-controls {
+            opacity: 1;
+        }
+
+        .floating-video-container.minimized .floating-controls,
+        .floating-video-container.minimized .floating-header {
+            display: none;
+        }
+
+        .floating-play-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-play-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .floating-progress {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .floating-progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .floating-time {
+            color: white;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            font-family: 'Courier New', monospace;
         }
 
         .info-section {
@@ -400,65 +536,6 @@
             font-size: 1.4rem;
             font-weight: bold;
             color: #96ceb4;
-        }
-
-        .cta-section {
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
-            padding: 80px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="60" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
-            animation: patternMove 20s linear infinite;
-        }
-
-        @keyframes patternMove {
-            0% { transform: translateX(0) translateY(0); }
-            100% { transform: translateX(-100px) translateY(-100px); }
-        }
-
-        .whatsapp-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-            background: #25D366;
-            color: white;
-            padding: 20px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: bold;
-            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 2;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4); }
-            50% { box-shadow: 0 15px 40px rgba(37, 211, 102, 0.6); }
-            100% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4); }
-        }
-
-        .whatsapp-btn:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 20px 50px rgba(37, 211, 102, 0.6);
-        }
-
-        .whatsapp-icon {
-            width: 30px;
-            height: 30px;
-            fill: currentColor;
         }
 
         .gallery-section {
@@ -581,7 +658,6 @@
             opacity: 0.9;
         }
 
-        /* Modal para vista completa de imágenes */
         .image-modal {
             display: none;
             position: fixed;
@@ -621,215 +697,65 @@
             opacity: 0.7;
         }
 
-        /* Video flotante Picture-in-Picture */
-        .floating-video-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 350px;
-            height: 200px;
-            background: rgba(0,0,0,0.95);
-            border-radius: 15px;
+        .cta-section {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
             overflow: hidden;
-            z-index: 9999;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-            border: 2px solid rgba(255,255,255,0.1);
         }
 
-        .floating-video-container.visible {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .floating-video-container.minimized {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-        }
-
-        .floating-video-container.minimized .floating-video {
-            object-fit: cover;
-        }
-
-        .floating-video-container.minimized .floating-controls {
-            display: none;
-        }
-
-        .floating-video-container.minimized .floating-header {
-            display: none;
-        }
-
-        .floating-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            cursor: pointer;
-        }
-
-        .floating-header {
+        .cta-section::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .floating-title {
-            color: white;
-            font-size: 0.9rem;
-            font-weight: bold;
-            opacity: 0.9;
-        }
-
-        .floating-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .floating-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .floating-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
-
-        .floating-controls {
-            position: absolute;
             bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-            padding: 15px;
-            display: flex;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="60" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: patternMove 20s linear infinite;
+        }
+
+        @keyframes patternMove {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-100px) translateY(-100px); }
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
             align-items: center;
             gap: 15px;
-            z-index: 10;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .floating-video-container:hover .floating-controls {
-            opacity: 1;
-        }
-
-        .floating-play-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
+            background: #25D366;
             color: white;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
+            padding: 20px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
+            animation: pulse 2s infinite;
         }
 
-        .floating-play-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4); }
+            50% { box-shadow: 0 15px 40px rgba(37, 211, 102, 0.6); }
+            100% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4); }
         }
 
-        .floating-progress {
-            flex: 1;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px;
-            overflow: hidden;
-            cursor: pointer;
+        .whatsapp-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(37, 211, 102, 0.6);
         }
 
-        .floating-progress-bar {
-            height: 100%;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            width: 0%;
-            transition: width 0.1s ease;
+        .whatsapp-icon {
+            width: 30px;
+            height: 30px;
+            fill: currentColor;
         }
 
-        .floating-time {
-            color: white;
-            font-size: 0.8rem;
-            opacity: 0.8;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Animación de pulso para el video minimizado */
-        .floating-video-container.minimized {
-            animation: pulse-ring 2s infinite;
-        }
-
-        @keyframes pulse-ring {
-            0% {
-                box-shadow: 0 0 0 0 rgba(69, 183, 209, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 0 10px rgba(69, 183, 209, 0.3);
-            }
-            100% {
-                box-shadow: 0 0 0 20px rgba(69, 183, 209, 0);
-            }
-        }
-
-        /* Indicador de scroll para mostrar que hay video flotante */
-        .scroll-indicator {
-            position: fixed;
-            top: 50%;
-            right: 30px;
-            transform: translateY(-50%);
-            background: rgba(69, 183, 209, 0.9);
-            color: white;
-            padding: 10px;
-            border-radius: 25px;
-            font-size: 0.8rem;
-            z-index: 8888;
-            opacity: 0;
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-
-        .scroll-indicator.show {
-            opacity: 1;
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(-50%);
-            }
-            40% {
-                transform: translateY(-60%);
-            }
-            60% {
-                transform: translateY(-55%);
-            }
-        }
-
-        /* Botón flotante de WhatsApp */
         .whatsapp-float {
             position: fixed;
             bottom: 25px;
@@ -901,7 +827,6 @@
             }
         }
 
-        /* Sección promocional del desarrollador */
         .developer-promo {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             padding: 60px 20px;
@@ -1034,7 +959,6 @@
                 right: 10px;
             }
 
-            /* Ajustes para móvil del video flotante */
             .floating-video-container {
                 width: 280px;
                 height: 160px;
@@ -1047,27 +971,24 @@
                 height: 60px;
             }
 
-            .scroll-indicator {
-                right: 20px;
-                font-size: 0.7rem;
-                padding: 8px;
-            }
-
-            /* Ajustes para botón de play móvil */
             .mobile-play-btn {
                 width: 60px;
                 height: 60px;
                 font-size: 24px;
             }
 
-            .video-toggle-btn {
+            .video-controls {
                 bottom: 20px;
                 right: 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .video-btn {
                 padding: 12px 20px;
                 font-size: 12px;
             }
 
-            /* Ajustes móvil para botón flotante WhatsApp */
             .whatsapp-float {
                 width: 50px;
                 height: 50px;
@@ -1081,10 +1002,9 @@
             }
 
             .whatsapp-float .tooltip {
-                display: none; /* Ocultar tooltip en móviles */
+                display: none;
             }
 
-            /* Ajustes móvil para sección desarrollador */
             .developer-promo {
                 padding: 40px 15px;
             }
@@ -1107,11 +1027,18 @@
                 font-size: 1rem;
             }
         }
+
+        /* Ocultar mobile overlay en desktop */
+        @media (min-width: 769px) {
+            .mobile-play-overlay {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
     <section class="hero-section">
-        <video class="hero-video" id="heroVideo" loop playsinline preload="metadata" poster="./assets/videos/tour-poster.jpg">
+        <video class="hero-video" id="heroVideo" loop playsinline preload="metadata">
             <source src="./assets/videos/tour-completo.mp4" type="video/mp4">
             <source src="./assets/videos/tour-completo-compressed.mp4" type="video/mp4">
             Tu navegador no soporta video HTML5.
@@ -1131,9 +1058,16 @@
             <p class="subtitle">Centro Educativo • Arquitectura Octagonal • Uso de Suelo Mixto • Cancún</p>
         </div>
 
-        <button class="video-toggle-btn" id="videoToggle">
-            <span id="videoToggleText">▶️ Reproducir Video</span>
-        </button>
+        <div class="video-controls">
+            <button class="video-btn" id="playPauseBtn">
+                <span id="playIcon">▶️</span>
+                <span id="playText">Reproducir</span>
+            </button>
+            <button class="video-btn" id="muteBtn">
+                <span id="muteIcon">🔊</span>
+                <span id="muteText">Audio</span>
+            </button>
+        </div>
     </section>
 
     <section class="info-section">
@@ -1282,21 +1216,21 @@
                         </div>
                     </div>
                     
-                    <div class="gallery-item expansion-feature">
-                        <img src="./assets/images/expansion-area.jpg" alt="Área de Expansión"
-                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%23764ba2\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'200\' y=\'130\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3EÁrea de%3C/text%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3EExpansión%3C/text%3E%3Ctext x=\'200\' y=\'170\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3E1000m²%3C/text%3E%3C/svg%3E'">
-                        <div class="gallery-overlay">
-                            <h3>🚀 Área de Expansión</h3>
-                            <p>1,000 m² libres para desarrollo futuro</p>
-                        </div>
-                    </div>
-                    
                     <div class="gallery-item">
                         <img src="./assets/images/estacionamiento.jpg" alt="Estacionamiento"
                              onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%232a5298\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3EEstacionamiento%3C/text%3E%3C/svg%3E'">
                         <div class="gallery-overlay">
                             <h3>🚗 Estacionamiento</h3>
                             <p>40+ cajones cubiertos</p>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item expansion-feature">
+                        <img src="./assets/images/expansion-area.jpg" alt="Área de Expansión"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%23764ba2\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'200\' y=\'130\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3EÁrea de%3C/text%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3EExpansión%3C/text%3E%3Ctext x=\'200\' y=\'170\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3E1000m²%3C/text%3E%3C/svg%3E'">
+                        <div class="gallery-overlay">
+                            <h3>🚀 Área de Expansión</h3>
+                            <p>1,000 m² libres para desarrollo futuro</p>
                         </div>
                     </div>
                 </div>
@@ -1336,11 +1270,6 @@
         </div>
     </div>
 
-    <!-- Indicador de scroll -->
-    <div class="scroll-indicator" id="scrollIndicator">
-        ⬇️ Scroll para video flotante
-    </div>
-
     <!-- Botón flotante de WhatsApp -->
     <a href="https://wa.me/529981399930?text=¡Hola!%20He%20visto%20las%20instalaciones%20premium%20del%20centro%20educativo%20con%20arquitectura%20octagonal%20y%20me%20interesa%20esta%20oportunidad%20única%20de%20inversión.%20Me%20llama%20especialmente%20la%20atención%20el%20diseño%20octagonal,%20el%20ágora,%20las%20instalaciones%20ecológicas%20(biodigestor%20y%20purificación%20de%20agua)%20y%20el%20potencial%20de%20expansión%20de%201000m².%20¿Podríamos%20hablar%20directamente?" 
        class="whatsapp-float" target="_blank" title="Contactar por WhatsApp">
@@ -1371,7 +1300,7 @@
         </div>
     </section>
 
-    <!-- Sección promocional del desarrollador (UNA SOLA VEZ) -->
+    <!-- Sección promocional del desarrollador -->
     <section class="developer-promo">
         <div class="developer-content">
             <h3>💼 ¿Te gustó este sitio web?</h3>
@@ -1424,877 +1353,513 @@
     </section>
 
     <script>
-        // Variables globales para compartir entre sistemas
-        let globalHideAudioPrompt = null;
-
-        // Crear elementos flotantes
-        function createFloatingElements() {
-            const container = document.getElementById('floating-cards');
-            const shapes = ['🏫', '📚', '🎓', '💼', '📈', '🏗️', '🎭', '☕', '🚗', '💧', '❄️', '📡'];
-            
-            for (let i = 0; i < 15; i++) {
-                const element = document.createElement('div');
-                element.className = 'floating-card';
-                element.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-                element.style.left = Math.random() * 100 + '%';
-                element.style.animationDelay = Math.random() * 20 + 's';
-                element.style.animationDuration = (15 + Math.random() * 10) + 's';
+        // Sistema de video mejorado - SIN conflictos
+        class VideoController {
+            constructor() {
+                this.heroVideo = document.getElementById('heroVideo');
+                this.floatingVideo = document.getElementById('floatingVideo');
+                this.floatingContainer = document.getElementById('floatingVideoContainer');
+                this.playPauseBtn = document.getElementById('playPauseBtn');
+                this.muteBtn = document.getElementById('muteBtn');
+                this.mobilePlayOverlay = document.getElementById('mobilePlayOverlay');
+                this.mobilePlayBtn = document.getElementById('mobilePlayBtn');
                 
-                // Agregar evento de clic para reventar burbujas
-                element.addEventListener('click', function() {
-                    popBubble(this);
-                });
+                this.isPlaying = false;
+                this.isMuted = false;
+                this.isFloatingVisible = false;
+                this.isMobile = this.detectMobile();
+                this.hasUserInteracted = false;
                 
-                container.appendChild(element);
+                this.initializeVideo();
+                this.setupEventListeners();
+                this.setupFloatingVideo();
+                this.setupIntersectionObserver();
             }
-        }
 
-        // Sistema de gestión de video inteligente con soporte móvil mejorado
-        function initializeVideoSystem() {
-            const video = document.getElementById('heroVideo');
-            const toggleBtn = document.getElementById('videoToggle');
-            const toggleText = document.getElementById('videoToggleText');
-            const mobilePlayOverlay = document.getElementById('mobilePlayOverlay');
-            const mobilePlayBtn = document.getElementById('mobilePlayBtn');
-            
-            let isPlaying = false;
-            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            let hasUserInteracted = false;
-            let hasAudio = false;
-
-            // Función para detectar si es dispositivo móvil (mejorada)
-            function isMobileDevice() {
+            detectMobile() {
                 return window.innerWidth <= 768 || 
-                       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                       ('ontouchstart' in window);
+                       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             }
 
-            // Mostrar overlay de play en móviles (solo móviles)
-            function showMobilePlayOverlay() {
-                if (isMobileDevice() && !hasUserInteracted) {
-                    mobilePlayOverlay.classList.add('show');
-                } else {
-                    // En desktop, asegurar que esté oculto
-                    mobilePlayOverlay.classList.remove('show');
-                }
+            initializeVideo() {
+                // Configuración inicial
+                this.heroVideo.volume = 0.7;
+                this.heroVideo.muted = false;
+                this.floatingVideo.volume = 0.7;
+                this.floatingVideo.muted = false;
+                this.updateUI();
+                
+                // Intentar autoplay cuando esté listo
+                this.heroVideo.addEventListener('canplaythrough', () => {
+                    this.attemptAutoplay();
+                }, { once: true });
             }
 
-            // Ocultar overlay de play
-            function hideMobilePlayOverlay() {
-                mobilePlayOverlay.classList.remove('show');
-                hasUserInteracted = true;
-            }
-
-            // Función para intentar autoplay inteligente
-            async function attemptSmartAutoplay() {
+            async attemptAutoplay() {
+                if (this.hasUserInteracted) return;
+                
                 try {
-                    // Primero intentar con audio
-                    video.muted = false;
-                    video.volume = 0.7;
-                    hasAudio = true;
-                    await video.play();
-                    isPlaying = true;
-                    updateToggleText();
-                    hideMobilePlayOverlay();
-                    console.log('✅ Autoplay con audio exitoso');
-                    return true;
+                    // Intentar con audio
+                    this.heroVideo.muted = false;
+                    await this.heroVideo.play();
+                    this.isPlaying = true;
+                    this.isMuted = false;
+                    this.updateUI();
+                    this.hideMobileOverlay();
                 } catch (error) {
-                    console.log('❌ Autoplay con audio bloqueado, intentando sin audio...');
                     try {
-                        // Fallback: sin audio pero preparado para activarlo
-                        video.muted = true;
-                        hasAudio = false;
-                        await video.play();
-                        isPlaying = true;
-                        updateToggleText();
-                        hideMobilePlayOverlay();
-                        
-                        // Mostrar notificación sutil para activar audio
-                        showAudioPrompt();
-                        console.log('✅ Autoplay sin audio - clic para activar audio');
-                        return true;
+                        // Fallback sin audio
+                        this.heroVideo.muted = true;
+                        await this.heroVideo.play();
+                        this.isPlaying = true;
+                        this.isMuted = true;
+                        this.updateUI();
+                        this.hideMobileOverlay();
                     } catch (finalError) {
-                        console.log('❌ Autoplay completamente bloqueado');
-                        isPlaying = false;
-                        updateToggleText();
-                        if (isMobileDevice()) {
-                            showMobilePlayOverlay();
+                        // Mostrar overlay móvil si autoplay falla completamente
+                        if (this.isMobile) {
+                            this.showMobileOverlay();
                         }
-                        return false;
                     }
                 }
             }
 
-            // Función para intentar reproducir video con audio
-            async function tryPlayVideoWithAudio() {
-                try {
-                    // Mantener audio activado por defecto
-                    video.muted = false;
-                    video.volume = 0.7; // Volumen al 70% por defecto
-                    hasAudio = true;
-                    await video.play();
-                    isPlaying = true;
-                    updateToggleText();
-                    hideMobilePlayOverlay();
-                    hideAudioPrompt(); // Ocultar prompt si estaba visible
-                    return true;
-                } catch (error) {
-                    console.log('Error reproduciendo con audio:', error);
-                    // Fallback: intentar sin audio solo si es necesario para autoplay
-                    return await tryPlayVideoMuted();
-                }
+            setupEventListeners() {
+                // Botón principal play/pause
+                this.playPauseBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.togglePlayPause();
+                });
+
+                // Botón de mute/unmute
+                this.muteBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.toggleMute();
+                });
+
+                // Botón móvil
+                this.mobilePlayBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.playWithUserInteraction();
+                });
+
+                // Detectar primera interacción
+                document.addEventListener('click', () => {
+                    this.hasUserInteracted = true;
+                }, { once: true });
+
+                // Eventos del video
+                this.heroVideo.addEventListener('play', () => {
+                    this.isPlaying = true;
+                    this.updateUI();
+                });
+
+                this.heroVideo.addEventListener('pause', () => {
+                    this.isPlaying = false;
+                    this.updateUI();
+                });
+
+                this.heroVideo.addEventListener('volumechange', () => {
+                    this.isMuted = this.heroVideo.muted;
+                    this.updateUI();
+                });
             }
 
-            // Función para intentar reproducir video sin audio (solo fallback para autoplay)
-            async function tryPlayVideoMuted() {
-                try {
-                    video.muted = true;
-                    hasAudio = false;
-                    await video.play();
-                    isPlaying = true;
-                    updateToggleText();
-                    hideMobilePlayOverlay();
-                    showAudioPrompt(); // Mostrar prompt para activar audio
-                    console.log('Reproduciendo sin audio debido a políticas del navegador - haz clic para activar audio');
-                    return true;
-                } catch (error) {
-                    console.log('Autoplay bloqueado completamente:', error);
-                    if (isMobileDevice()) {
-                        showMobilePlayOverlay();
-                    }
-                    return false;
-                }
-            }
-
-            // Mostrar prompt sutil para activar audio
-            function showAudioPrompt() {
-                // Crear prompt si no existe
-                let audioPrompt = document.getElementById('audioPrompt');
-                if (!audioPrompt) {
-                    audioPrompt = document.createElement('div');
-                    audioPrompt.id = 'audioPrompt';
-                    audioPrompt.innerHTML = `
-                        <div style="
-                            position: fixed;
-                            top: 20px;
-                            right: 20px;
-                            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-                            color: white;
-                            padding: 12px 20px;
-                            border-radius: 25px;
-                            font-size: 14px;
-                            font-weight: bold;
-                            z-index: 10000;
-                            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-                            cursor: pointer;
-                            animation: audioPromptPulse 2s infinite;
-                            backdrop-filter: blur(10px);
-                            border: 2px solid rgba(255,255,255,0.2);
-                            transition: all 0.3s ease;
-                            transform: translateX(100px);
-                            opacity: 0;
-                        ">
-                            🔊 Clic para activar audio
-                        </div>
-                    `;
-                    document.body.appendChild(audioPrompt);
-                    
-                    // Agregar animación CSS
-                    if (!document.getElementById('audioPromptStyles')) {
-                        const style = document.createElement('style');
-                        style.id = 'audioPromptStyles';
-                        style.textContent = `
-                            @keyframes audioPromptPulse {
-                                0% { transform: translateX(0) scale(1); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
-                                50% { transform: translateX(0) scale(1.05); box-shadow: 0 12px 35px rgba(0,0,0,0.5); }
-                                100% { transform: translateX(0) scale(1); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
-                            }
-                        `;
-                        document.head.appendChild(style);
-                    }
-                    
-                    // Click para activar audio
-                    audioPrompt.addEventListener('click', async function() {
-                        if (isPlaying && video.muted) {
-                            video.muted = false;
-                            video.volume = 0.7;
-                            hasAudio = true;
-                            updateToggleText();
-                            hideAudioPrompt();
-                        }
-                    });
-                    
-                    // Auto-ocultar después de 8 segundos
-                    setTimeout(() => {
-                        hideAudioPrompt();
-                    }, 8000);
-                }
+            async togglePlayPause() {
+                this.hasUserInteracted = true;
                 
-                // Mostrar prompt con animación suave
-                setTimeout(() => {
-                    if (audioPrompt) {
-                        audioPrompt.style.opacity = '1';
-                        audioPrompt.style.transform = 'translateX(0)';
-                    }
-                }, 100);
-            }
-
-            // Ocultar prompt de audio
-            function hideAudioPrompt() {
-                const audioPrompt = document.getElementById('audioPrompt');
-                if (audioPrompt) {
-                    audioPrompt.style.opacity = '0';
-                    audioPrompt.style.transform = 'translateX(100px)';
-                    setTimeout(() => {
-                        if (audioPrompt.parentNode) {
-                            audioPrompt.parentNode.removeChild(audioPrompt);
-                        }
-                    }, 300);
-                }
-            }
-            
-            // Hacer función accesible globalmente
-            globalHideAudioPrompt = hideAudioPrompt;
-
-            // Función para alternar audio
-            function toggleAudio() {
-                if (isPlaying) {
-                    if (video.muted) {
-                        video.muted = false;
-                        video.volume = 0.7; // Restaurar volumen por defecto
-                        hasAudio = true;
-                        hideAudioPrompt();
+                if (this.isFloatingVisible) {
+                    // Controlar video flotante
+                    if (this.floatingVideo.paused) {
+                        await this.floatingVideo.play();
                     } else {
-                        video.muted = true;
-                        hasAudio = false;
+                        this.floatingVideo.pause();
                     }
-                    updateToggleText();
+                } else {
+                    // Controlar video hero
+                    if (this.heroVideo.paused) {
+                        await this.heroVideo.play();
+                    } else {
+                        this.heroVideo.pause();
+                    }
+                }
+                this.hideMobileOverlay();
+            }
+
+            toggleMute() {
+                this.hasUserInteracted = true;
+                
+                if (this.isFloatingVisible) {
+                    this.floatingVideo.muted = !this.floatingVideo.muted;
+                    this.heroVideo.muted = this.floatingVideo.muted;
+                } else {
+                    this.heroVideo.muted = !this.heroVideo.muted;
+                    this.floatingVideo.muted = this.heroVideo.muted;
                 }
             }
 
-            // Actualizar texto del botón según el estado
-            function updateToggleText() {
-                if (isPlaying) {
-                    toggleText.textContent = hasAudio ? '⏸️ Pausar Video 🔊' : '⏸️ Pausar Video 🔇';
+            async playWithUserInteraction() {
+                this.hasUserInteracted = true;
+                this.heroVideo.muted = false;
+                this.isMuted = false;
+                
+                try {
+                    await this.heroVideo.play();
+                    this.isPlaying = true;
+                } catch (error) {
+                    console.log('Error al reproducir:', error);
+                }
+                
+                this.hideMobileOverlay();
+                this.updateUI();
+            }
+
+            updateUI() {
+                // Actualizar botón play/pause
+                const playIcon = document.getElementById('playIcon');
+                const playText = document.getElementById('playText');
+                
+                if (this.isPlaying) {
+                    playIcon.textContent = '⏸️';
+                    playText.textContent = 'Pausar';
                 } else {
-                    toggleText.textContent = '▶️ Reproducir Video 🔊';
+                    playIcon.textContent = '▶️';
+                    playText.textContent = 'Reproducir';
+                }
+
+                // Actualizar botón mute
+                const muteIcon = document.getElementById('muteIcon');
+                const muteText = document.getElementById('muteText');
+                
+                if (this.isMuted) {
+                    muteIcon.textContent = '🔇';
+                    muteText.textContent = 'Activar';
+                } else {
+                    muteIcon.textContent = '🔊';
+                    muteText.textContent = 'Audio';
                 }
             }
 
-            // Función para pausar video
-            function pauseVideo() {
-                video.pause();
-                isPlaying = false;
-                updateToggleText();
+            showMobileOverlay() {
+                if (this.isMobile) {
+                    this.mobilePlayOverlay.classList.add('show');
+                }
             }
 
-            // Control de reproducción desde el botón principal (mejorado)
-            toggleBtn.addEventListener('click', async function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🎬 Botón de video clickeado - Estado actual:', isPlaying ? 'reproduciendo' : 'pausado');
-                
-                if (isPlaying) {
-                    pauseVideo();
-                    console.log('⏸️ Video pausado');
-                } else {
-                    // Cuando el usuario hace clic, intentar con audio
-                    const success = await tryPlayVideoWithAudio();
-                    console.log('▶️ Intento de reproducir video:', success ? 'exitoso' : 'falló');
-                }
-            });
+            hideMobileOverlay() {
+                this.mobilePlayOverlay.classList.remove('show');
+            }
 
-            // Event listener adicional para asegurar funcionamiento
-            toggleBtn.addEventListener('touchend', async function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('👆 Touch en botón de video');
-                
-                if (isPlaying) {
-                    pauseVideo();
-                } else {
-                    await tryPlayVideoWithAudio();
-                }
-            });
+            // Sistema de video flotante mejorado
+            setupFloatingVideo() {
+                const floatingPlayBtn = document.getElementById('floatingPlayBtn');
+                const volumeBtn = document.getElementById('volumeBtn');
+                const minimizeBtn = document.getElementById('minimizeBtn');
+                const expandBtn = document.getElementById('expandBtn');
+                const closeBtn = document.getElementById('closeFloatingBtn');
+                const progress = document.getElementById('floatingProgress');
+                const progressBar = document.getElementById('floatingProgressBar');
+                const timeDisplay = document.getElementById('floatingTime');
 
-            // Event listener para mousedown como backup
-            toggleBtn.addEventListener('mousedown', function(e) {
-                console.log('🖱️ Mousedown en botón - botón funcionando');
-                toggleBtn.style.transform = 'scale(0.95)';
-            });
+                // Controles del video flotante
+                floatingPlayBtn.addEventListener('click', () => {
+                    this.togglePlayPause();
+                });
 
-            toggleBtn.addEventListener('mouseup', function(e) {
-                toggleBtn.style.transform = '';
-            });
+                volumeBtn.addEventListener('click', () => {
+                    this.toggleMute();
+                });
 
-            // Control desde el botón móvil central (mejorado)
-            mobilePlayBtn.addEventListener('click', async function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('📱 Botón móvil clickeado');
-                await tryPlayVideoWithAudio();
-            });
+                minimizeBtn.addEventListener('click', () => {
+                    this.floatingContainer.classList.add('minimized');
+                    minimizeBtn.style.display = 'none';
+                    expandBtn.style.display = 'block';
+                });
 
-            // Doble clic en el botón para alternar audio (mejorado)
-            toggleBtn.addEventListener('dblclick', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🔄 Doble clic - alternando audio');
-                toggleAudio();
-            });
+                expandBtn.addEventListener('click', () => {
+                    this.floatingContainer.classList.remove('minimized');
+                    expandBtn.style.display = 'none';
+                    minimizeBtn.style.display = 'block';
+                });
 
-            // Event listeners para estados del video
-            video.addEventListener('play', function() {
-                isPlaying = true;
-                updateToggleText();
-                hideMobilePlayOverlay();
-            });
+                closeBtn.addEventListener('click', () => {
+                    this.hideFloatingVideo();
+                });
 
-            video.addEventListener('pause', function() {
-                isPlaying = false;
-                updateToggleText();
-            });
-
-            video.addEventListener('ended', function() {
-                isPlaying = false;
-                updateToggleText();
-                if (isMobileDevice()) {
-                    showMobilePlayOverlay();
-                }
-            });
-
-            video.addEventListener('volumechange', function() {
-                hasAudio = !video.muted && video.volume > 0;
-                updateToggleText();
-            });
-
-            // Intentar autoplay cuando el video está listo
-            video.addEventListener('canplaythrough', async function() {
-                // Configurar audio por defecto (activado)
-                video.volume = 0.7;
-                
-                if (!hasUserInteracted) {
-                    // Intentar autoplay inteligente
-                    await attemptSmartAutoplay();
-                } else {
-                    // Usuario ya interactuó, configurar estado inicial
-                    video.muted = false;
-                    hasAudio = true;
-                    updateToggleText();
-                    if (isMobileDevice()) {
-                        showMobilePlayOverlay();
-                    }
-                }
-            });
-
-            // Manejar cambios de orientación en móviles
-            window.addEventListener('orientationchange', function() {
-                setTimeout(() => {
-                    if (isMobileDevice() && !isPlaying && !hasUserInteracted) {
-                        showMobilePlayOverlay();
-                    }
-                }, 500);
-            });
-
-            // Detectar CUALQUIER interacción del usuario tempranamente para activar autoplay
-            function enableAutoplayOnInteraction() {
-                const enableAutoplay = async function() {
-                    if (!hasUserInteracted && video.readyState >= 3) {
-                        hasUserInteracted = true;
+                // Progreso del video
+                this.floatingVideo.addEventListener('timeupdate', () => {
+                    if (this.floatingVideo.duration) {
+                        const progressPercent = (this.floatingVideo.currentTime / this.floatingVideo.duration) * 100;
+                        progressBar.style.width = progressPercent + '%';
                         
-                        // Si el video no está reproduciéndose, intentar autoplay
-                        if (video.paused) {
-                            await attemptSmartAutoplay();
-                        } else if (video.muted) {
-                            // Si está reproduciéndose pero sin audio, activar audio
-                            video.muted = false;
-                            video.volume = 0.7;
-                            hasAudio = true;
-                            updateToggleText();
-                            hideAudioPrompt();
-                        }
-                    }
-                };
-
-                // Detectar múltiples tipos de interacción
-                ['click', 'touchstart', 'keydown', 'mousemove', 'scroll'].forEach(eventType => {
-                    document.addEventListener(eventType, enableAutoplay, { 
-                        once: true, 
-                        passive: true,
-                        capture: true 
-                    });
-                });
-            }
-
-            // Detectar primer toque/click del usuario
-            document.addEventListener('touchstart', function() {
-                hasUserInteracted = true;
-            }, { once: true });
-
-            document.addEventListener('click', function() {
-                hasUserInteracted = true;
-            }, { once: true });
-
-            // Activar detección temprana de interacciones
-            enableAutoplayOnInteraction();
-
-            // Inicialización
-            if (isMobileDevice()) {
-                // En móviles, mostrar overlay después de cargar
-                setTimeout(showMobilePlayOverlay, 1000);
-            }
-
-            // Agregar tooltip informativo y verificación
-            toggleBtn.title = 'Autoplay inteligente • Se adapta a las políticas del navegador • Doble clic para alternar audio';
-            
-            // Verificación adicional: asegurar que el botón sea visible y clickeable
-            setTimeout(() => {
-                const rect = toggleBtn.getBoundingClientRect();
-                console.log('🔍 Verificación del botón:', {
-                    visible: rect.width > 0 && rect.height > 0,
-                    position: { top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left },
-                    clickeable: toggleBtn.style.pointerEvents !== 'none'
-                });
-                
-                // Test de clic programático
-                toggleBtn.addEventListener('mouseenter', () => {
-                    console.log('🖱️ Mouse sobre el botón - botón detectado correctamente');
-                });
-            }, 1000);
-        }
-
-        // Sistema de modal para vista completa de imágenes
-        function initializeImageModal() {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            const closeBtn = document.getElementById('modalClose');
-            
-            const galleryImages = document.querySelectorAll('.gallery-item img');
-            
-            galleryImages.forEach((img) => {
-                img.addEventListener('click', function() {
-                    modal.classList.add('active');
-                    modalImg.src = this.src;
-                    modalImg.alt = this.alt;
-                    document.body.style.overflow = 'hidden';
-                });
-            });
-            
-            function hideModal() {
-                modal.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-            
-            // Event listeners para controles del modal
-            closeBtn.addEventListener('click', hideModal);
-            
-            // Cerrar modal haciendo clic fuera de la imagen
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    hideModal();
-                }
-            });
-            
-            // Navegación con teclado
-            document.addEventListener('keydown', function(e) {
-                if (modal.classList.contains('active')) {
-                    if (e.key === 'Escape') {
-                        hideModal();
-                    }
-                }
-            });
-        }
-
-        // Función para reventar burbujas
-        function popBubble(bubble) {
-            // Sonido de pop (usando Web Audio API)
-            playPopSound();
-            
-            // Agregar clase de animación de pop
-            bubble.classList.add('popping');
-            
-            // Crear efecto de partículas
-            createParticles(bubble);
-            
-            // Después de la animación, regenerar la burbuja
-            setTimeout(() => {
-                respawnBubble(bubble);
-            }, 600);
-        }
-
-        // Función para regenerar burbuja
-        function respawnBubble(bubble) {
-            const shapes = ['🏫', '📚', '🎓', '💼', '📈', '🏗️', '🎭', '☕', '🚗', '💧', '❄️', '📡'];
-            
-            // Quitar clase de pop
-            bubble.classList.remove('popping');
-            
-            // Nueva posición y emoji
-            bubble.style.left = Math.random() * 100 + '%';
-            bubble.style.top = '100vh'; // Empezar desde abajo
-            bubble.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-            
-            // Agregar animación de respawn
-            bubble.classList.add('respawning');
-            
-            // Quitar clase de respawn después de la animación
-            setTimeout(() => {
-                bubble.classList.remove('respawning');
-            }, 800);
-        }
-
-        // Crear efecto de partículas cuando revienta
-        function createParticles(bubble) {
-            const rect = bubble.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            for (let i = 0; i < 8; i++) {
-                const particle = document.createElement('div');
-                particle.style.position = 'fixed';
-                particle.style.left = centerX + 'px';
-                particle.style.top = centerY + 'px';
-                particle.style.width = '8px';
-                particle.style.height = '8px';
-                particle.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
-                particle.style.borderRadius = '50%';
-                particle.style.pointerEvents = 'none';
-                particle.style.zIndex = '9999';
-                
-                const angle = (i / 8) * Math.PI * 2;
-                const velocity = 100 + Math.random() * 50;
-                const vx = Math.cos(angle) * velocity;
-                const vy = Math.sin(angle) * velocity;
-                
-                particle.style.animation = `particleExplode 0.8s ease-out forwards`;
-                particle.style.setProperty('--vx', vx + 'px');
-                particle.style.setProperty('--vy', vy + 'px');
-                
-                document.body.appendChild(particle);
-                
-                setTimeout(() => {
-                    if (particle.parentNode) {
-                        particle.parentNode.removeChild(particle);
-                    }
-                }, 800);
-            }
-        }
-
-        // Sistema de video flotante Picture-in-Picture con soporte móvil mejorado
-        function initializeFloatingVideo() {
-            const heroVideo = document.getElementById('heroVideo');
-            const floatingContainer = document.getElementById('floatingVideoContainer');
-            const floatingVideo = document.getElementById('floatingVideo');
-            const floatingPlayBtn = document.getElementById('floatingPlayBtn');
-            const floatingProgress = document.getElementById('floatingProgress');
-            const floatingProgressBar = document.getElementById('floatingProgressBar');
-            const floatingTime = document.getElementById('floatingTime');
-            const volumeBtn = document.getElementById('volumeBtn');
-            const minimizeBtn = document.getElementById('minimizeBtn');
-            const expandBtn = document.getElementById('expandBtn');
-            const closeFloatingBtn = document.getElementById('closeFloatingBtn');
-            const scrollIndicator = document.getElementById('scrollIndicator');
-
-            let isFloatingVideoVisible = false;
-            let isMinimized = false;
-            let showIndicator = true;
-            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-
-            // Intersection Observer para detectar cuando el video hero sale del viewport
-            const heroObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.intersectionRatio < 0.3 && heroVideo.currentTime > 0 && !heroVideo.paused) {
-                        // Video hero no está visible y está reproduciéndose
-                        showFloatingVideo();
-                    } else if (entry.intersectionRatio >= 0.7) {
-                        // Video hero está claramente visible
-                        hideFloatingVideo();
+                        const currentTime = this.formatTime(this.floatingVideo.currentTime);
+                        const duration = this.formatTime(this.floatingVideo.duration);
+                        timeDisplay.textContent = `${currentTime} / ${duration}`;
                     }
                 });
-            }, {
-                threshold: [0.3, 0.7] // Umbrales más amplios para mayor estabilidad
-            });
 
-            heroObserver.observe(heroVideo);
-
-            // Mostrar indicador de scroll al principio (solo en desktop)
-            setTimeout(() => {
-                if (showIndicator && !isMobile) {
-                    scrollIndicator.classList.add('show');
-                    setTimeout(() => {
-                        scrollIndicator.classList.remove('show');
-                    }, 3000);
-                }
-            }, 2000);
-
-            function showFloatingVideo() {
-                if (!isFloatingVideoVisible) {
-                    // Sincronizar tiempo de reproducción y audio
-                    floatingVideo.currentTime = heroVideo.currentTime;
-                    floatingVideo.muted = heroVideo.muted;
-                    floatingVideo.volume = heroVideo.volume;
-                    updateVolumeButton();
+                // Click en barra de progreso
+                progress.addEventListener('click', (e) => {
+                    const rect = progress.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const clickRatio = clickX / rect.width;
+                    const newTime = clickRatio * this.floatingVideo.duration;
                     
-                    // PAUSAR el video hero para evitar reproducción simultánea
-                    const wasHeroPlaying = !heroVideo.paused;
-                    heroVideo.pause();
-                    
-                    if (wasHeroPlaying) {
-                        // Solo reproducir el video flotante si el hero estaba reproduciéndose
-                        floatingVideo.play().catch(e => {
-                            console.log('Error reproduciendo video flotante:', e);
-                        });
+                    if (!isNaN(newTime)) {
+                        this.floatingVideo.currentTime = newTime;
+                        this.heroVideo.currentTime = newTime;
                     }
-                    
-                    floatingContainer.classList.add('visible');
-                    isFloatingVideoVisible = true;
-                    showIndicator = false;
-                    scrollIndicator.classList.remove('show');
-                    
-                    // Ocultar prompt de audio del hero ya que ahora usamos el flotante
-                    if (globalHideAudioPrompt) {
-                        globalHideAudioPrompt();
-                    }
-                }
-            }
+                });
 
-            function hideFloatingVideo() {
-                if (isFloatingVideoVisible) {
-                    // Sincronizar de vuelta al video hero
-                    heroVideo.currentTime = floatingVideo.currentTime;
-                    heroVideo.muted = floatingVideo.muted;
-                    heroVideo.volume = floatingVideo.volume;
-                    
-                    // Si el video flotante estaba reproduciéndose, continuar con el hero
-                    const wasFloatingPlaying = !floatingVideo.paused;
-                    floatingVideo.pause();
-                    
-                    if (wasFloatingPlaying) {
-                        heroVideo.play().catch(e => {
-                            console.log('Error reproduciendo video hero:', e);
-                        });
-                    }
-                    
-                    floatingContainer.classList.remove('visible');
-                    isFloatingVideoVisible = false;
-                }
-            }
+                // Sincronizar eventos
+                this.floatingVideo.addEventListener('play', () => {
+                    this.isPlaying = true;
+                    this.updateUI();
+                    floatingPlayBtn.textContent = '⏸️';
+                });
 
-            function updateVolumeButton() {
-                if (floatingVideo.muted || floatingVideo.volume === 0) {
-                    volumeBtn.textContent = '🔇';
-                    volumeBtn.title = 'Activar audio';
-                } else if (floatingVideo.volume < 0.5) {
-                    volumeBtn.textContent = '🔉';
-                    volumeBtn.title = 'Volumen bajo';
-                } else {
-                    volumeBtn.textContent = '🔊';
-                    volumeBtn.title = 'Volumen alto';
-                }
-            }
-
-            // Configuración inicial del video flotante con audio activado
-            function initializeFloatingVideoAudio() {
-                floatingVideo.muted = false;
-                floatingVideo.volume = 0.7; // Volumen por defecto al 70%
-                updateVolumeButton();
-            }
-
-            // Controles del video flotante
-            floatingPlayBtn.addEventListener('click', async function() {
-                if (floatingVideo.paused) {
-                    try {
-                        // Solo reproducir el video flotante, mantener hero pausado
-                        await floatingVideo.play();
-                        floatingPlayBtn.textContent = '⏸️';
-                    } catch (e) {
-                        console.log('Error al reproducir:', e);
-                    }
-                } else {
-                    // Pausar ambos videos
-                    floatingVideo.pause();
-                    heroVideo.pause();
+                this.floatingVideo.addEventListener('pause', () => {
+                    this.isPlaying = false;
+                    this.updateUI();
                     floatingPlayBtn.textContent = '▶️';
-                }
-            });
+                });
 
-            // Control de volumen del video flotante
-            volumeBtn.addEventListener('click', function() {
-                if (floatingVideo.muted) {
-                    // Activar audio
-                    floatingVideo.muted = false;
-                    heroVideo.muted = false;
-                    if (floatingVideo.volume === 0) {
-                        floatingVideo.volume = 0.7;
-                        heroVideo.volume = 0.7;
+                this.floatingVideo.addEventListener('volumechange', () => {
+                    this.isMuted = this.floatingVideo.muted;
+                    volumeBtn.textContent = this.isMuted ? '🔇' : '🔊';
+                    this.updateUI();
+                });
+
+                // Click en video minimizado para expandir
+                this.floatingVideo.addEventListener('click', () => {
+                    if (this.floatingContainer.classList.contains('minimized')) {
+                        expandBtn.click();
                     }
-                } else {
-                    // Desactivar audio
-                    floatingVideo.muted = true;
-                    heroVideo.muted = true;
+                });
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.intersectionRatio < 0.3 && this.isPlaying) {
+                            // Video hero no visible y reproduciéndose -> mostrar flotante
+                            this.showFloatingVideo();
+                        } else if (entry.intersectionRatio >= 0.7) {
+                            // Video hero visible -> ocultar flotante
+                            this.hideFloatingVideo();
+                        }
+                    });
+                }, {
+                    threshold: [0.3, 0.7]
+                });
+
+                observer.observe(this.heroVideo);
+            }
+
+            showFloatingVideo() {
+                if (!this.isFloatingVisible && this.isPlaying) {
+                    // Sincronizar tiempo y estado
+                    this.floatingVideo.currentTime = this.heroVideo.currentTime;
+                    this.floatingVideo.muted = this.heroVideo.muted;
+                    this.floatingVideo.volume = this.heroVideo.volume;
+                    
+                    // Pausar hero y reproducir flotante
+                    this.heroVideo.pause();
+                    this.floatingVideo.play().catch(e => console.log('Error flotante:', e));
+                    
+                    this.floatingContainer.classList.add('visible');
+                    this.isFloatingVisible = true;
                 }
-                updateVolumeButton();
-            });
+            }
 
-            // Rueda del mouse para controlar volumen sobre el botón de volumen
-            volumeBtn.addEventListener('wheel', function(e) {
-                e.preventDefault();
-                const delta = e.deltaY > 0 ? -0.1 : 0.1;
-                let newVolume = Math.max(0, Math.min(1, floatingVideo.volume + delta));
-                
-                floatingVideo.volume = newVolume;
-                heroVideo.volume = newVolume;
-                
-                if (newVolume > 0) {
-                    floatingVideo.muted = false;
-                    heroVideo.muted = false;
+            hideFloatingVideo() {
+                if (this.isFloatingVisible) {
+                    // Sincronizar de vuelta al hero
+                    this.heroVideo.currentTime = this.floatingVideo.currentTime;
+                    this.heroVideo.muted = this.floatingVideo.muted;
+                    this.heroVideo.volume = this.floatingVideo.volume;
+                    
+                    // Pausar flotante y continuar con hero
+                    const wasPlaying = !this.floatingVideo.paused;
+                    this.floatingVideo.pause();
+                    
+                    if (wasPlaying) {
+                        this.heroVideo.play().catch(e => console.log('Error hero:', e));
+                    }
+                    
+                    this.floatingContainer.classList.remove('visible');
+                    this.isFloatingVisible = false;
                 }
-                
-                updateVolumeButton();
-            });
+            }
 
-            // Barra de progreso
-            floatingVideo.addEventListener('timeupdate', function() {
-                const progress = (floatingVideo.currentTime / floatingVideo.duration) * 100;
-                floatingProgressBar.style.width = progress + '%';
-                
-                // Actualizar tiempo
-                const currentTime = formatTime(floatingVideo.currentTime);
-                const duration = formatTime(floatingVideo.duration);
-                floatingTime.textContent = `${currentTime} / ${duration}`;
-                
-                // Sincronizar con video hero (con tolerancia para evitar loops)
-                if (Math.abs(heroVideo.currentTime - floatingVideo.currentTime) > 2) {
-                    heroVideo.currentTime = floatingVideo.currentTime;
-                }
-            });
-
-            // Sincronizar cambios de volumen
-            floatingVideo.addEventListener('volumechange', function() {
-                updateVolumeButton();
-                // Sincronizar con video hero
-                if (Math.abs(heroVideo.volume - floatingVideo.volume) > 0.05) {
-                    heroVideo.volume = floatingVideo.volume;
-                    heroVideo.muted = floatingVideo.muted;
-                }
-            });
-
-            // Click en barra de progreso para navegar
-            floatingProgress.addEventListener('click', function(e) {
-                const rect = floatingProgress.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickRatio = clickX / rect.width;
-                const newTime = clickRatio * floatingVideo.duration;
-                
-                if (!isNaN(newTime)) {
-                    floatingVideo.currentTime = newTime;
-                    heroVideo.currentTime = newTime;
-                }
-            });
-
-            // Botón minimizar
-            minimizeBtn.addEventListener('click', function() {
-                floatingContainer.classList.add('minimized');
-                minimizeBtn.style.display = 'none';
-                expandBtn.style.display = 'block';
-                isMinimized = true;
-            });
-
-            // Botón expandir
-            expandBtn.addEventListener('click', function() {
-                floatingContainer.classList.remove('minimized');
-                expandBtn.style.display = 'none';
-                minimizeBtn.style.display = 'block';
-                isMinimized = false;
-            });
-
-            // Click en video minimizado para expandir
-            floatingVideo.addEventListener('click', function() {
-                if (isMinimized) {
-                    expandBtn.click();
-                }
-            });
-
-            // Botón cerrar
-            closeFloatingBtn.addEventListener('click', function() {
-                // Sincronizar tiempo antes de cerrar
-                heroVideo.currentTime = floatingVideo.currentTime;
-                heroVideo.muted = floatingVideo.muted;
-                heroVideo.volume = floatingVideo.volume;
-                
-                // Ocultar video flotante y pausar ambos
-                hideFloatingVideo();
-                floatingVideo.pause();
-                heroVideo.pause();
-                
-                // Actualizar botón del video principal
-                const toggleText = document.getElementById('videoToggleText');
-                if (toggleText) {
-                    const hasAudio = !heroVideo.muted && heroVideo.volume > 0;
-                    toggleText.textContent = hasAudio ? '▶️ Reproducir Video 🔊' : '▶️ Reproducir Video 🔇';
-                }
-            });
-
-            // Actualizar estado del botón play/pause
-            floatingVideo.addEventListener('play', function() {
-                floatingPlayBtn.textContent = '⏸️';
-            });
-
-            floatingVideo.addEventListener('pause', function() {
-                floatingPlayBtn.textContent = '▶️';
-            });
-
-            // Manejar errores de video
-            floatingVideo.addEventListener('error', function(e) {
-                console.log('Error en video flotante:', e);
-            });
-
-            // Función para formatear tiempo
-            function formatTime(seconds) {
+            formatTime(seconds) {
                 if (isNaN(seconds)) return '0:00';
-                
                 const minutes = Math.floor(seconds / 60);
                 const secs = Math.floor(seconds % 60);
                 return `${minutes}:${secs.toString().padStart(2, '0')}`;
             }
-
-            // Inicializar estado del botón de volumen y configuración de audio
-            initializeFloatingVideoAudio();
-            updateVolumeButton();
         }
 
-        // Función para generar sonido de pop
-        function playPopSound() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
+        // Sistema de burbujas flotantes
+        class FloatingBubbles {
+            constructor() {
+                this.container = document.getElementById('floating-cards');
+                this.shapes = ['🏫', '📚', '🎓', '💼', '📈', '🏗️', '🎭', '☕', '🚗', '💧', '❄️', '📡'];
+                this.createBubbles();
+            }
+
+            createBubbles() {
+                for (let i = 0; i < 15; i++) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'floating-card';
+                    bubble.textContent = this.shapes[Math.floor(Math.random() * this.shapes.length)];
+                    bubble.style.left = Math.random() * 100 + '%';
+                    bubble.style.animationDelay = Math.random() * 20 + 's';
+                    bubble.style.animationDuration = (15 + Math.random() * 10) + 's';
+                    
+                    bubble.addEventListener('click', () => this.popBubble(bubble));
+                    this.container.appendChild(bubble);
+                }
+            }
+
+            popBubble(bubble) {
+                this.playPopSound();
+                bubble.classList.add('popping');
+                this.createParticles(bubble);
                 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
+                setTimeout(() => {
+                    this.respawnBubble(bubble);
+                }, 600);
+            }
+
+            respawnBubble(bubble) {
+                bubble.classList.remove('popping');
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.top = '100vh';
+                bubble.textContent = this.shapes[Math.floor(Math.random() * this.shapes.length)];
+                bubble.classList.add('respawning');
                 
-                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
+                setTimeout(() => {
+                    bubble.classList.remove('respawning');
+                }, 800);
+            }
+
+            createParticles(bubble) {
+                const rect = bubble.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
                 
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.1);
-            } catch (e) {
-                // Fallback silencioso si no se puede crear audio
+                for (let i = 0; i < 8; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.cssText = `
+                        position: fixed;
+                        left: ${centerX}px;
+                        top: ${centerY}px;
+                        width: 8px;
+                        height: 8px;
+                        background: hsl(${Math.random() * 360}, 70%, 60%);
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: 9999;
+                        animation: particleExplode 0.8s ease-out forwards;
+                    `;
+                    
+                    const angle = (i / 8) * Math.PI * 2;
+                    const velocity = 100 + Math.random() * 50;
+                    particle.style.setProperty('--vx', Math.cos(angle) * velocity + 'px');
+                    particle.style.setProperty('--vy', Math.sin(angle) * velocity + 'px');
+                    
+                    document.body.appendChild(particle);
+                    setTimeout(() => particle.remove(), 800);
+                }
+            }
+
+            playPopSound() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
+                    
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                } catch (e) {
+                    // Silencioso si no se puede crear audio
+                }
             }
         }
 
-        // Inicialización completa del sistema multimedia
+        // Sistema de modal de imágenes
+        class ImageModal {
+            constructor() {
+                this.modal = document.getElementById('imageModal');
+                this.modalImg = document.getElementById('modalImage');
+                this.closeBtn = document.getElementById('modalClose');
+                this.setupModal();
+            }
+
+            setupModal() {
+                const galleryImages = document.querySelectorAll('.gallery-item img');
+                
+                galleryImages.forEach(img => {
+                    img.addEventListener('click', () => {
+                        this.showModal(img.src, img.alt);
+                    });
+                });
+                
+                this.closeBtn.addEventListener('click', () => this.hideModal());
+                
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) {
+                        this.hideModal();
+                    }
+                });
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.modal.classList.contains('active')) {
+                        this.hideModal();
+                    }
+                });
+            }
+
+            showModal(src, alt) {
+                this.modal.classList.add('active');
+                this.modalImg.src = src;
+                this.modalImg.alt = alt;
+                document.body.style.overflow = 'hidden';
+            }
+
+            hideModal() {
+                this.modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Inicialización cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
             // Inicializar todos los sistemas
-            createFloatingElements();
-            initializeVideoSystem();
-            initializeImageModal();
-            initializeFloatingVideo(); // Nueva funcionalidad
+            new VideoController();
+            new FloatingBubbles();
+            new ImageModal();
             
-            // Inicializar efectos de galería existentes
+            // Efecto parallax suave
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const hero = document.querySelector('.hero-section');
+                if (hero) {
+                    hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+                }
+            });
+
+            // Efectos adicionales de galería
             const galleryItems = document.querySelectorAll('.gallery-item');
             galleryItems.forEach(item => {
                 item.addEventListener('mouseenter', function() {
@@ -2308,7 +1873,7 @@
                 });
             });
 
-            // Efecto especial para el área de expansión
+            // Efecto especial para área de expansión
             const expansionItem = document.querySelector('.expansion-feature');
             if (expansionItem) {
                 setInterval(() => {
@@ -2320,15 +1885,21 @@
             }
         });
 
-        // Animación parallax suave
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const hero = document.querySelector('.hero-section');
-            
-            if (hero) {
-                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+        // CSS para partículas (agregar al style)
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes particleExplode {
+                0% {
+                    opacity: 1;
+                    transform: translate(0, 0) scale(1);
+                }
+                100% {
+                    opacity: 0;
+                    transform: translate(var(--vx), var(--vy)) scale(0);
+                }
             }
-        });
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
