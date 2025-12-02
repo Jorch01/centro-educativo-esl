@@ -6,7 +6,7 @@
     <!-- Página Principal -->
     <url>
         <loc>https://jorch01.github.io/centro-educativo-esl/</loc>
-        <lastmod>2025-12-02</lastmod>
+        <lastmod>2025-12-02T00:00:00+00:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
 
@@ -55,15 +55,9 @@
             <video:content_loc>https://jorch01.github.io/centro-educativo-esl/assets/videos/tour-completo.mp4</video:content_loc>
             <video:player_loc>https://jorch01.github.io/centro-educativo-esl/</video:player_loc>
             <video:duration>180</video:duration>
+            <video:publication_date>2025-12-01T00:00:00+00:00</video:publication_date>
+            <video:family_friendly>yes</video:family_friendly>
         </video:video>
-    </url>
-
-    <!-- Página de índice -->
-    <url>
-        <loc>https://jorch01.github.io/centro-educativo-esl/index.html</loc>
-        <lastmod>2025-12-02</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
     </url>
 
 </urlset>
