@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+
+    <!-- Página Principal -->
+    <url>
+        <loc>https://jorch01.github.io/centro-educativo-esl/</loc>
+        <lastmod>2025-12-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+
+        <!-- Imágenes principales -->
+        <image:image>
+            <image:loc>https://jorch01.github.io/centro-educativo-esl/assets/images/edificio-principal.jpg</image:loc>
+            <image:title>Edificio Principal - Centro Educativo Premium Cancún</image:title>
+            <image:caption>Arquitectura octagonal única del centro educativo de 3,305m² en Cancún</image:caption>
+        </image:image>
+
+        <image:image>
+            <image:loc>https://jorch01.github.io/centro-educativo-esl/assets/images/auditorio.jpg</image:loc>
+            <image:title>Auditorio Profesional</image:title>
+            <image:caption>Auditorio con capacidad para 200+ personas</image:caption>
+        </image:image>
+
+        <image:image>
+            <image:loc>https://jorch01.github.io/centro-educativo-esl/assets/images/aulas.jpg</image:loc>
+            <image:title>Aulas Equipadas</image:title>
+            <image:caption>15 aulas completamente equipadas con tecnología educativa</image:caption>
+        </image:image>
+
+        <image:image>
+            <image:loc>https://jorch01.github.io/centro-educativo-esl/assets/images/biblioteca.jpg</image:loc>
+            <image:title>Biblioteca Moderna</image:title>
+            <image:caption>Espacios de estudio y consulta bibliográfica</image:caption>
+        </image:image>
+
+        <image:image>
+            <image:loc>https://jorch01.github.io/centro-educativo-esl/assets/images/estacionamiento.jpg</image:loc>
+            <image:title>Estacionamiento Subterráneo</image:title>
+            <image:caption>Estacionamiento con 40+ cajones cubiertos</image:caption>
+        </image:image>
+
+        <image:image>
+            <image:loc>https://jorch01.github.io/centro-educativo-esl/assets/images/expansion-area.jpg</image:loc>
+            <image:title>Área de Expansión</image:title>
+            <image:caption>1,000m² libres para desarrollo futuro</image:caption>
+        </image:image>
+
+        <!-- Video tour -->
+        <video:video>
+            <video:thumbnail_loc>https://jorch01.github.io/centro-educativo-esl/assets/images/edificio-principal.jpg</video:thumbnail_loc>
+            <video:title>Tour Virtual - Centro Educativo Premium Cancún</video:title>
+            <video:description>Recorrido completo por las instalaciones del centro educativo premium en Cancún, Q.R.</video:description>
+            <video:content_loc>https://jorch01.github.io/centro-educativo-esl/assets/videos/tour-completo.mp4</video:content_loc>
+            <video:player_loc>https://jorch01.github.io/centro-educativo-esl/</video:player_loc>
+            <video:duration>180</video:duration>
+        </video:video>
+    </url>
+
+    <!-- Página de índice -->
+    <url>
+        <loc>https://jorch01.github.io/centro-educativo-esl/index.html</loc>
+        <lastmod>2025-12-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+</urlset>

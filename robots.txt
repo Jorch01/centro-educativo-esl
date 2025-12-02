@@ -1,0 +1,55 @@
+# Robots.txt optimizado para SEO
+# Centro Educativo Premium - Inversión Inmobiliaria Cancún
+# https://jorch01.github.io/centro-educativo-esl/
+
+# Permitir acceso a todos los bots de búsqueda
+User-agent: *
+Allow: /
+
+# Permitir específicamente a los principales bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: facebot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+# Permitir acceso completo a recursos multimedia
+Allow: /assets/images/
+Allow: /assets/videos/
+
+# Optimización para rastreo
+Crawl-delay: 0
+
+# Sitemap principal
+Sitemap: https://jorch01.github.io/centro-educativo-esl/sitemap.xml
+
+# Información de contacto para webmasters
+# WhatsApp: +52 998 139 9930
+# Inversión Inmobiliaria - Cancún, Quintana Roo, México
